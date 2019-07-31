@@ -305,30 +305,30 @@ defmodule TrivialCsv.Schema do
     end
   end
 
-  defmacro parse(fun) do
+  defmacro transform(fun) do
     quote do
       # this should be improved
       # perhaps a `update_with` on state
       # which would take a function as the updater?
 
-      parser = wrap_fun(unquote(fun), 1..2)
+      transformer = wrap_fun(unquote(fun), 1..2)
 
       cond do
         State.cursor_at?(@state, :row) ->
-          parsers = @state |> State.get(:row) |> Map.get(:parsers)
+          transformers = @state |> State.get(:row) |> Map.get(:transformers)
 
-          @state State.update(@state, :row, %{parsers: [parser | parsers]})
+          @state State.update(@state, :row, %{transformers: [transformer | transformers]})
 
         State.cursor_at?(@state, :field) ->
-          parsers = @state |> State.get(:field) |> Map.get(:parsers)
+          transformers = @state |> State.get(:field) |> Map.get(:transformers)
 
-          @state State.update(@state, :field, %{parsers: [parser | parsers]})
+          @state State.update(@state, :field, %{transformers: [transformer | transformers]})
 
         true ->
           raise SchemaError, """
 
-          Incorrect parser position.
-          Parsers can only appear
+          Incorrect transformer position.
+          Transformers can only appear
           inside rows or fields.
           """
       end

@@ -1,5 +1,5 @@
 # TODOs
-- [ ] Rename `parse` to `transform`
+- [x] Rename `parse` to `transform`
 - [ ] Documentation
 - [ ] Tests for Schema
 - [ ] Tests for TrivialCsv (core)

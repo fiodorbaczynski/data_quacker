@@ -106,7 +106,7 @@ defmodule TrivialCsv.Schema.State do
   end
 
   defp new_row(index) do
-    %{__index__: index, fields: %{}, validators: [], parsers: [], skip_if: nil}
+    %{__index__: index, fields: %{}, validators: [], transformers: [], skip_if: nil}
   end
 
   defp new_field(name) do
@@ -116,7 +116,7 @@ defmodule TrivialCsv.Schema.State do
       source: nil,
       subfields: %{},
       validators: [],
-      parsers: [],
+      transformers: [],
       skip_if: nil
     }
   end

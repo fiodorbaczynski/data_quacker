@@ -1,7 +1,7 @@
 defmodule TrivialCsv.Builder do
   @moduledoc false
 
-  alias TrivialCsv.{Context, Matcher, Sourcer, Validator, Parser, Skipper}
+  alias TrivialCsv.{Context, Matcher, Sourcer, Validator, Transformer, Skipper}
 
   def call(
         {headers, source_rows},
@@ -75,7 +75,7 @@ defmodule TrivialCsv.Builder do
            __index__: row_index,
            fields: fields,
            validators: validators,
-           parsers: parsers,
+           transformers: transformers,
            skip_if: skip_if
          },
          values,
@@ -83,7 +83,7 @@ defmodule TrivialCsv.Builder do
        ) do
     with context <- Context.update_metadata(context, :row, row_index),
          {:ok, fields} <- fields |> Enum.into([]) |> build_fields(values, context),
-         {:ok, fields} <- Parser.call(fields, parsers, context),
+         {:ok, fields} <- Transformer.call(fields, transformers, context),
          :ok <- Validator.call(fields, validators, context),
          false <- Skipper.call(fields, skip_if, context) do
       {:ok, fields}
@@ -109,7 +109,7 @@ defmodule TrivialCsv.Builder do
          %{
            __name__: field_name,
            validators: validators,
-           parsers: parsers,
+           transformers: transformers,
            skip_if: skip_if
          } = field,
          values,
@@ -117,7 +117,7 @@ defmodule TrivialCsv.Builder do
        ) do
     with context <- Context.update_metadata(context, :field, field_name),
          value <- do_build_field_value(field, values, context),
-         {:ok, value} <- Parser.call(value, parsers, context),
+         {:ok, value} <- Transformer.call(value, transformers, context),
          :ok <- Validator.call(value, validators, context),
          false <- Skipper.call(value, skip_if, context) do
       {:ok, value}

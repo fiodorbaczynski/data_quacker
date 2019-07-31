@@ -136,7 +136,9 @@ defmodule TrivialCsv.Schema.StateTest do
     } do
       assert %State{
                cursor: [{:row, 0}, {:schema, :abc}],
-               rows: [%{__index__: 0, fields: %{}, parsers: [], skip_if: nil, validators: []}]
+               rows: [
+                 %{__index__: 0, fields: %{}, transformers: [], skip_if: nil, validators: []}
+               ]
              } = State.register(state, :row, {0, %{}})
     end
 
@@ -149,7 +151,7 @@ defmodule TrivialCsv.Schema.StateTest do
                  def: %{
                    __name__: :def,
                    __type__: nil,
-                   parsers: [],
+                   transformers: [],
                    skip_if: nil,
                    source: nil,
                    subfields: %{},
@@ -171,7 +173,7 @@ defmodule TrivialCsv.Schema.StateTest do
                      ghi: %{
                        __name__: :ghi,
                        __type__: nil,
-                       parsers: [],
+                       transformers: [],
                        skip_if: nil,
                        source: nil,
                        subfields: %{},

@@ -30,7 +30,7 @@ defmodule TrivialCsv.MixProject do
     [
       files: ["lib", "mix.exs", "README*", "LICENSE*"],
       maintainers: ["Fiodor Baczyński"],
-      licenses: ["MIT"],
+      licenses: ["Apache-2.0"],
       links: %{"GitHub" => "https://github.com/fiodorbaczynski/trivial-csv"}
     ]
   end
