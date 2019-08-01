@@ -1,10 +1,414 @@
 defmodule TrivialCsv.Schema do
+  @moduledoc ~S"""
+  Defines macros for creating data schemas
+  which represents a mapping from the source to the desired output.
+
+  Note: To use the macros you have to put `use TrivialCsv.Schema` in the desired module.
+
+  A schema can be defined to represent the structure of an arbitrarily nested map or list of maps.
+  This is done with the `schema/2`, `row/2` and `field/3` macros.
+  Additionally, there are two special macros: `validate/1` and `transform/1`.
+  Lastly, the `source/1` and `virtual_source/1` macros are used
+  to define the data which should be inserted in a particular field.
+  These allow for validation and transformation to be performed
+  on a specific subset of the output data.
+
+  Note: the `row/2` and `field/3` macros represent the *output* structure,
+  while the `source/1` and `virtual_source/1` macros reference the input data.
+  Since both the input and the output can be said to have rows,
+  the term "source row" is used in the documentation to denote a row in the input data.
+  The term "row" is used to denote a row in the output.
+
+  All of the structure-defining macros take a block as their last argument
+  which can be thought of as their "body". The `schema/2` and `field/2` macros
+  also take a name as their first argument, and `row/2` and `field/3`
+  take a keyword list of options as their first and second argument respectively.
+
+  To understand how this works in practice let's take a look at an example:
+
+  Suppose we have a table of students in the form of a CSV file, which looks like this:
+
+  | First name | Last name | Age | Favourite subject |
+  |:----------:|:---------:|:---:|:-----------------:|
+  | John       | Smith     | 19  | Maths             |
+  | Adam       | Johnson   | 18  | Physics           |
+  | Quackers   | the Duck  | 1   | Programming       |
+
+  Also suppose our desired output is a list of tuples with maps with the following structure
+
+  ```elixir
+  {:ok, %{
+    first_name: "...",
+    last_name: "...",
+    age: "...",
+    favourite_subject: "..."
+  }}
+  ```
+
+  The mapping from the table to the list of maps can be represented as follows:
+
+  ```elixir
+  defmodule StudentsSchema do
+    use TrivialCsv.Schema
+
+    schema :students do
+      field :first_name do
+        source("first name")
+      end
+
+      field :first_name do
+        source("last name")
+      end
+
+      field :age do
+        source("age")
+      end
+
+      field :favourite_subject do
+        source("favourite subject")
+      end
+    end
+  end
+  ```
+
+  This looks great (I hope!), but realistically we would like age to be an Integer,
+  and favourite subject to be somehow validated. This can be achieved by modifying the previous schema, like this:
+
+  ```elixir
+  defmodule StudentsSchema do
+    use TrivialCsv.Schema
+
+    schema :students do
+      field :first_name do
+        source("first name")
+      end
+
+      field :first_name do
+        source("last name")
+      end
+
+      field :age do
+        transform(fn age ->
+          case Integer.parse(age) do
+            {age_int, _} -> {:ok, age_int}
+            :error -> {:error, "Invalid value #{age} given"}
+          end
+        end)
+
+        source("age")
+      end
+
+      field :favourite_subject do
+        validate(fn subj -> subj in ["Maths, "Physics, "Programming"] end)
+
+        source("favourite subject")
+      end
+    end
+  end
+  ```
+
+  Now our result will be a list of maps, like:
+  ```elixir
+  %{
+    # ...
+    {:ok, %{age: 123, ...},
+    # ...
+  }
+  ```
+
+  However if, for example, an invalid age is given,
+  the entire row where the error occurred will result in the following tuple:
+  `{:error, "Invalid value blabla given"}`
+
+  Great, but what if we have the "First name" and "Last name" columns in our CSV files,
+  but only a `:full_name` field in our database? No problem, Fields can be arbitrarily nested.
+
+  It's just a small tweak:
+
+  ```elixir
+  defmodule StudentsSchema do
+    use TrivialCsv.Schema
+
+    schema :students do
+      field :full_name do
+        transform(fn %{first_name: first_name, last_name: last_name} ->
+          {:ok, "#{first_name} #{last_name}"}
+        end)
+
+        field :first_name do
+          source("first name")
+        end
+
+        field :first_name do
+          source("last name")
+        end
+      end
+
+      # ...
+    end
+  end
+  ```
+
+  Now our output is:
+
+  ```elixir
+  [
+    #...
+    {:ok, %{
+      full_name: "John Smith",
+      # ...
+    }}
+    #...
+  ]
+  ```
+
+  To illustrate some more functionality, let's take a look at another example.
+  We will start with a very simple CSV source file
+  which will gradually become more and more complex,
+  and so will our rules for parsing it.
+
+  | Apartment/flat size (in m^2) | Price per 1 month |
+  |:----------------------------:|:-----------------:|
+  | 40                           | 1000              |
+  | 50                           | 1100              |
+
+  ```elixir
+  defmodule PricingSchema do
+    use TrivialCsv.Schema
+
+    schema :pricing do
+      field :size do
+        transform(fn size ->
+          case Integer.parse(size) do
+            {size_int, _} -> {:ok, size_int}
+            :error -> {:error, "Invalid value #{size} given"}
+          end
+        end)
+
+        source("Apartment/flat size (in m^2)")
+      end
+
+      field :price do
+        transform(fn price ->
+          case Integer.parse(price) do
+            {price_int, _} -> {:ok, price_int}
+            :error -> {:error, "Invalid value #{price} given"}
+          end
+        end)
+
+        source("Price per 1 month")
+      end
+    end
+  end
+  ```
+
+  The above results in:
+  [
+    {:ok, %{size: 40, price: 1000}},
+    {:ok, %{size: 50, price: 1100}}
+  ]
+
+  This schema would work, but there are a couple of problems with it.
+  First of all, it's not fun to copy&paste the function for parsing string to int
+  over and over again. That's why we'll create a regular function
+  and pass a reference to it in both places.
+
+  ```elixir
+  defmodule PricingSchema do
+    use TrivialCsv.Schema
+
+    schema :pricing do
+      field :size do
+        transform(&MyModule.parse_int/1)
+        # ...
+      end
+
+      field :price do
+        transform(&MyModule.parse_int/1)
+        # ...
+      end
+    end
+
+    def parse_int(str) do
+      case Integer.parse(str) do
+        {int, _} -> {:ok, int}
+        :error -> {:error, "Invalid value #{str} given"}
+      end
+    end
+  end
+  ```
+
+  Note: the reference to the function must be written out in full (including the module name),
+  because it will be executed in a different context.
+
+  This is better, but still not ideal for two reasons.
+  First of all, we source our data based on simple string matching. While this will still work
+  if the casing in the headers changes, it will not if "Price per 1 month" changes to "Price *for* 1 month",
+  or "Apartment/flat size (in m^2)" to "Apartment *or* flat size (in m^2)".
+  Since most likely we do not have control over the source, these can change unexpectedly.
+  Second of all, our error messages are quite vague since they do not specify the offending source row and field.
+
+  To tackle the first one we can change our `source/1` macros to be either strings, regexes,
+  lists of strings or custom functions. The details of each approach is specified
+  in the docs for the `source/1` macro, but for now we will just us a list of strings.
+
+  `source("Apartment/flat size (in m^2)")` -> `source(["apartment", "size"])`
+  `source("Apartment/flat size (in m^2)")` -> `source(["price", "1"])`
+
+  The above mean "match a header which contains apartment and size"
+  and "match a header which contains apartment and 1".
+
+  Note: The order of the headers is inconsequential.
+
+  As for the second issue, transform can actually be given a one- or two-argument function.
+  If it is given a one-argument function, the argument at execution will be the value of the field
+  or row. If it is given a two-argument function, the second argument will be a `%Context{}` struct.
+  Which contains the following fields: `:metadata`, `:support_data`, `:source_row`.
+  Support data is an arbitrary value of any type that can be passed in at parse time.
+  It can be used to, for example, validate something against a database without having to fetch the data
+  for each row. More on that in the documentation of the `TrivialCsv` module. For now, however, we only need `metadata` and `source_row`. The first one is a tuple
+  of an atom and an atom or a tuple, where the first element is the type (`:field` or `:row`)
+  and the second one is the name or index in the case of a row.
+  The second one is just the index of the source row which is being processed.
+
+  Note: the term "source row" is used here to denote a row in the input file. The term row
+  is used to denote a row of output.
+
+  We can therefore change our `parse_int/1` function into
+
+  ```elixir
+  def parse_int(str, %{metadata: metadata, source_row: source_row}) do
+    case Integer.parse(str) do
+      {int, _} -> {:ok, int}
+      :error -> {:error, "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
+    end
+  end
+  ```
+
+  An example error will look like this: `{:error, "Error processing field price in row 2; 'oops' given"}`
+
+  The last case we will be dealing with here is again a "small change" to the file.
+
+  | Apartment/flat size (in m^2) | Price per 1 month | Price per 3 months |
+  |:----------------------------:|:-----------------:|--------------------|
+  | 40                           | 1000              | 2800               |
+  | 50                           | 1100              | 3000               |
+  | 60                           |                   | 3600               |
+
+  Now each source row contains two different prices for different lease period.
+  Additionally, for the bigger apartments there may only be an option
+  to rent for three months.
+
+  We could create a schema to parse the data int rows like:
+  `%{size: 40, price_1: 1000, price_3: 2800}`,
+  but this is not ideal since we would have to deal with `nil` at `:price_1`,
+  and we probably want separate rows in the database for each price and lease duration,
+  as this allows us to easily pull out the price for a specific size and lease duration.
+  A better structure therefore would look like this
+  ```elixir
+  [
+    {:ok, %{size: 40, duration: 1, price: 1000}},
+    {:ok, %{size: 40, duration: 3, price: 2800}}
+    # ...
+  ]
+  ```
+
+  This is where the `row/2` macro comes in. It allows us to specify any number of output rows
+  for a single input row. Previously we did not use this macro at all,
+  since the lack of it implies there is exactly one output row per input row.
+
+  This is our new schema:
+
+  ```elixir
+  defmodule PricingSchema do
+    use TrivialCsv.Schema
+
+    schema :pricing do
+      row skip_if: (fn %{price: price} -> is_nil(price) end) do
+        field :size do
+          transform(&MyModule.parse_int/1)
+
+          source(["apartment", "size"])
+        end
+
+        field :duration do
+          virtual_source(1)
+        end
+
+        field :price do
+          transform(&MyModule.parse_int/1)
+
+          source(["price", "1"])
+        end
+      end
+
+      row do
+        field :size do
+          transform(&MyModule.parse_int/1)
+
+          source(["apartment", "size"])
+        end
+
+        field :duration do
+          virtual_source(1)
+        end
+
+        field :price do
+          transform(&MyModule.parse_int/1)
+
+          source(["price", "3"])
+        end
+      end
+    end
+
+    def parse_int("", _), do: {:ok, nil}
+
+    def parse_int(str, %{metadata: metadata, source_row: source_row}) do
+      case Integer.parse(str) do
+        {int, _} -> {:ok, int}
+        :error -> {:error, "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
+      end
+    end
+  end
+  ```
+
+  There are a few new interesting things going on here.
+
+  Firstly, as we can see, any column in the source can be inserted multiple times
+  within the schema. This is particularly useful if for a single input row
+  we want to have multiple output rows which share some of the fields.
+
+  Secondly, we added a new field `:duration` which instead of being sourced from the input data
+  is just a static value. We achieved it with the `virtual_source/1` macro
+  which either takes a value or a function returning a value to be injected into the field.
+  This is useful for us to be able to make the output structure as close to our database model as we can.
+
+  Note: There is a special case in the `parse_int/2` function to return nil on empty input,
+  because `Integer.parse/1` will return an error given an empty string.
+
+  Lastly, we added a special option to the first output row, called `skip_if`.
+  The function we provided will be evaluated for each output row representing a one-month lease price,
+  and if it returns `true` the row will not appear in the actual result.
+
+  Using our latest schema and the CSV presented above, we get this result:
+  ```elixir
+  [
+    {:ok, %{size: 40, duration: 1, price: 1000}},
+    {:ok, %{size: 40, duration: 3, price: 2800}},
+    {:ok, %{size: 50, duration: 1, price: 1100}},
+    {:ok, %{size: 50, duration: 3, price: 3000}},
+    {:ok, %{size: 50, duration: 1, price: 3600}}
+  ]
+  ```
+  """
+
   alias TrivialCsv.Schema.State
 
   alias TrivialCsv.SchemaError
 
   import TrivialCsv.Schema.FunWrapper
 
+  @doc false
   defmacro __using__(_opts) do
     quote do
       import unquote(__MODULE__)
@@ -327,6 +731,7 @@ defmodule TrivialCsv.Schema do
     end
   end
 
+  @doc false
   defmacro skip_if_opt(opts) do
     {unquoted_opts, _} = Code.eval_quoted(opts)
 
