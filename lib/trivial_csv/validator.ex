@@ -1,9 +1,9 @@
-defmodule TrivialCsv.Validator do
+defmodule DataQuacker.Validator do
   @moduledoc false
 
-  alias TrivialCsv.Context
+  alias DataQuacker.Context
 
-  alias TrivialCsv.Schema.WrappedFun
+  alias DataQuacker.Schema.WrappedFun
 
   @type validation_result :: :ok | :error | {:error, any()}
 

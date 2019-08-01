@@ -1,7 +1,7 @@
-defmodule TrivialCsv.Sourcer do
+defmodule DataQuacker.Sourcer do
   @moduledoc false
 
-  alias TrivialCsv.Schema.WrappedFun
+  alias DataQuacker.Schema.WrappedFun
 
   def call(%WrappedFun{} = getter_function, _values, context) do
     apply_function(getter_function, context)

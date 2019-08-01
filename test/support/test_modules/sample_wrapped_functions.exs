@@ -1,5 +1,5 @@
-defmodule TrivialCsv.TestModules.SampleWrappedFunctions do
-  import TrivialCsv.Schema.FunWrapper
+defmodule DataQuacker.TestModules.SampleWrappedFunctions do
+  import DataQuacker.Schema.FunWrapper
 
   @fun0 wrap_fun(fn ->
           "no args"

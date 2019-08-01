@@ -1,9 +1,9 @@
-defmodule TrivialCsv.MixProject do
+defmodule DataQuacker.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :trivial_csv,
+      app: :data_quacker,
       version: "0.1.0",
       elixir: "~> 1.8",
       deps: deps(),
@@ -11,10 +11,10 @@ defmodule TrivialCsv.MixProject do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       package: package(),
-      name: "TrivialCsv",
+      name: "DataQuacker",
       description: "A library for validating transforming and parsing CSV data",
-      source_url: "https://github.com/fiodorbaczynski/trivial_csv",
-      homepage_url: "https://github.com/fiodorbaczynski/trivial_csv",
+      source_url: "https://github.com/fiodorbaczynski/data_quacker",
+      homepage_url: "https://github.com/fiodorbaczynski/data_quacker",
       docs: docs()
     ]
   end
@@ -34,7 +34,7 @@ defmodule TrivialCsv.MixProject do
       files: ["lib", "mix.exs", "README*", "LICENSE*"],
       maintainers: ["Fiodor Baczyński"],
       licenses: ["Apache-2.0"],
-      links: %{"GitHub" => "https://github.com/fiodorbaczynski/trivial_csv"}
+      links: %{"GitHub" => "https://github.com/fiodorbaczynski/data_quacker"}
     ]
   end
 
@@ -49,15 +49,15 @@ defmodule TrivialCsv.MixProject do
 
   defp docs() do
     [
-      main: "TrivialCsv",
+      main: "DataQuacker",
       extras: ["README.md"],
       source_url: "https://github.com/elixir-ecto/ecto",
       groups_for_modules: [
         Schema: [
-          TrivialCsv.Schema
+          DataQuacker.Schema
         ],
         Parsing: [
-          TrivialCsv
+          DataQuacker
         ]
       ]
     ]

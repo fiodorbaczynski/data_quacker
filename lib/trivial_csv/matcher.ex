@@ -1,7 +1,7 @@
-defmodule TrivialCsv.Matcher do
+defmodule DataQuacker.Matcher do
   @moduledoc false
 
-  alias TrivialCsv.Schema.WrappedFun
+  alias DataQuacker.Schema.WrappedFun
 
   def call(headers, rules, context), do: compile_rules(rules, headers, context)
 

@@ -1,5 +1,5 @@
-defmodule TrivialCsv do
-  alias TrivialCsv.Builder
+defmodule DataQuacker do
+  alias DataQuacker.Builder
 
   @spec parse(String.t(), map(), any(), Keyword.t()) :: any()
   def parse(file_path, schema, support_data, opts \\ []) do
@@ -27,6 +27,6 @@ defmodule TrivialCsv do
   end
 
   defp apply_defaults_opts(opts) do
-    Keyword.merge(Application.get_all_env(:trivial_csv), opts)
+    Keyword.merge(Application.get_all_env(:data_quacker), opts)
   end
 end

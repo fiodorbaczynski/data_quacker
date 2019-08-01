@@ -1,11 +1,11 @@
-defmodule TrivialCsv.Case do
+defmodule DataQuacker.Case do
   @moduledoc false
 
   use ExUnit.CaseTemplate
 
   using do
     quote do
-      import TrivialCsv.Case
+      import DataQuacker.Case
     end
   end
 

@@ -1,7 +1,7 @@
-defmodule TrivialCsv.Schema.StateTest do
+defmodule DataQuacker.Schema.StateTest do
   use ExUnit.Case, async: true
 
-  alias TrivialCsv.Schema.State
+  alias DataQuacker.Schema.State
 
   describe "new/0" do
     test "should return an empty State struct" do

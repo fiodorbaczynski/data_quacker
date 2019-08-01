@@ -1,6 +1,6 @@
-# TrivialCsv
+# DataQuacker
 
-TrivialCsv aims at making it *trivial* to validate, transform and parse CSV files.
+DataQuacker aims at making it easier to validate, transform and parse CSV files.
 
 It features a simple DSL similar to those of Ecto's and Absinthe's schemas, which allows the user to declaratively describe the rules for mapping columns in a CSV file into a desired structure. It also makes it easy to specify rules for validating, transforming and skipping specific fields and rows.
 
@@ -13,14 +13,14 @@ To install the library, add it to your `mix.deps`.
 ```elixir
 def deps do
   [
-    {:trivial_csv, "https://github.com/fiodorbaczynski/trivial-csv.git"}
+    {:data_quacker, "https://github.com/fiodorbaczynski/data_quacker.git"}
   ]
 end
 ```
 
 ## Contribution
 
-Any contribution, including reporting issues, is greatly appreciated. You may contribute anything you feel is needed, but the tasks listed in [todo.md](./docs/todo.md) are the most important for now for TrivialCsv to be "1.0-ready".
+Any contribution, including reporting issues, is greatly appreciated. You may contribute anything you feel is needed, but the tasks listed in [todo.md](./docs/todo.md) are the most important for now for DataQuacker to be "1.0-ready".
 
 ## Testimonials
 

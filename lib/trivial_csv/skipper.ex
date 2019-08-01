@@ -1,7 +1,7 @@
-defmodule TrivialCsv.Skipper do
+defmodule DataQuacker.Skipper do
   @moduledoc false
 
-  alias TrivialCsv.Schema.WrappedFun
+  alias DataQuacker.Schema.WrappedFun
 
   def call(_, nil, _), do: false
 

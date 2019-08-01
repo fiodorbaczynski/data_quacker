@@ -1,7 +1,7 @@
-defmodule TrivialCsv.Builder do
+defmodule DataQuacker.Builder do
   @moduledoc false
 
-  alias TrivialCsv.{Context, Matcher, Sourcer, Validator, Transformer, Skipper}
+  alias DataQuacker.{Context, Matcher, Sourcer, Validator, Transformer, Skipper}
 
   def call(
         {headers, source_rows},

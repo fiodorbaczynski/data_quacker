@@ -1,8 +1,8 @@
-defmodule TrivialCsv.Schema.FunWrapper do
+defmodule DataQuacker.Schema.FunWrapper do
   @moduledoc false
 
-  alias TrivialCsv.SchemaError
-  alias TrivialCsv.Schema.WrappedFun
+  alias DataQuacker.SchemaError
+  alias DataQuacker.Schema.WrappedFun
 
   defmacro wrap_fun(fun, expected_arity \\ nil) do
     arity = fun_arity(fun)

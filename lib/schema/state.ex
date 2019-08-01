@@ -1,7 +1,7 @@
-defmodule TrivialCsv.Schema.State do
+defmodule DataQuacker.Schema.State do
   @moduledoc false
 
-  alias TrivialCsv.Schema.State
+  alias DataQuacker.Schema.State
 
   defstruct cursor: [], flags: %{}, schema: %{}, matchers: [], rows: [], fields: %{}
 

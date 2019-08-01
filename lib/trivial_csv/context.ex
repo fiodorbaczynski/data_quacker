@@ -1,4 +1,4 @@
-defmodule TrivialCsv.Context do
+defmodule DataQuacker.Context do
   @moduledoc """
   This module provides a struct
   to hold contextual data

@@ -1,9 +1,9 @@
-defmodule TrivialCsv.Schema do
+defmodule DataQuacker.Schema do
   @moduledoc ~S"""
   Defines macros for creating data schemas
   which represents a mapping from the source to the desired output.
 
-  Note: To use the macros you have to put `use TrivialCsv.Schema` in the desired module.
+  Note: To use the macros you have to put `use DataQuacker.Schema` in the desired module.
 
   A schema can be defined to represent the structure of an arbitrarily nested map or list of maps.
   This is done with the `schema/2`, `row/2` and `field/3` macros.
@@ -49,7 +49,7 @@ defmodule TrivialCsv.Schema do
 
   ```elixir
   defmodule StudentsSchema do
-    use TrivialCsv.Schema
+    use DataQuacker.Schema
 
     schema :students do
       field :first_name do
@@ -76,7 +76,7 @@ defmodule TrivialCsv.Schema do
 
   ```elixir
   defmodule StudentsSchema do
-    use TrivialCsv.Schema
+    use DataQuacker.Schema
 
     schema :students do
       field :first_name do
@@ -127,7 +127,7 @@ defmodule TrivialCsv.Schema do
 
   ```elixir
   defmodule StudentsSchema do
-    use TrivialCsv.Schema
+    use DataQuacker.Schema
 
     schema :students do
       field :full_name do
@@ -174,7 +174,7 @@ defmodule TrivialCsv.Schema do
 
   ```elixir
   defmodule PricingSchema do
-    use TrivialCsv.Schema
+    use DataQuacker.Schema
 
     schema :pricing do
       field :size do
@@ -215,7 +215,7 @@ defmodule TrivialCsv.Schema do
 
   ```elixir
   defmodule PricingSchema do
-    use TrivialCsv.Schema
+    use DataQuacker.Schema
 
     schema :pricing do
       field :size do
@@ -266,7 +266,7 @@ defmodule TrivialCsv.Schema do
   Which contains the following fields: `:metadata`, `:support_data`, `:source_row`.
   Support data is an arbitrary value of any type that can be passed in at parse time.
   It can be used to, for example, validate something against a database without having to fetch the data
-  for each row. More on that in the documentation of the `TrivialCsv` module. For now, however, we only need `metadata` and `source_row`. The first one is a tuple
+  for each row. More on that in the documentation of the `DataQuacker` module. For now, however, we only need `metadata` and `source_row`. The first one is a tuple
   of an atom and an atom or a tuple, where the first element is the type (`:field` or `:row`)
   and the second one is the name or index in the case of a row.
   The second one is just the index of the source row which is being processed.
@@ -321,7 +321,7 @@ defmodule TrivialCsv.Schema do
 
   ```elixir
   defmodule PricingSchema do
-    use TrivialCsv.Schema
+    use DataQuacker.Schema
 
     schema :pricing do
       row skip_if: (fn %{price: price} -> is_nil(price) end) do
@@ -402,11 +402,11 @@ defmodule TrivialCsv.Schema do
   ```
   """
 
-  alias TrivialCsv.Schema.State
+  alias DataQuacker.Schema.State
 
-  alias TrivialCsv.SchemaError
+  alias DataQuacker.SchemaError
 
-  import TrivialCsv.Schema.FunWrapper
+  import DataQuacker.Schema.FunWrapper
 
   @doc false
   defmacro __using__(_opts) do

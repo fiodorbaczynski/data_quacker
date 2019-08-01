@@ -1,4 +1,4 @@
-defmodule TrivialCsv.Schema.WrappedFun do
+defmodule DataQuacker.Schema.WrappedFun do
   @moduledoc """
   This module provides
   a struct for representing

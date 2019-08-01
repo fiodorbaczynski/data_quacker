@@ -1,9 +1,9 @@
-defmodule TrivialCsv.Transformer do
+defmodule DataQuacker.Transformer do
   @moduledoc false
 
-  alias TrivialCsv.Context
+  alias DataQuacker.Context
 
-  alias TrivialCsv.Schema.WrappedFun
+  alias DataQuacker.Schema.WrappedFun
 
   @type transformation_result :: {:ok, any()} | {:error, any()}
 

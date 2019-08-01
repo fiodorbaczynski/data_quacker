@@ -1,3 +1,3 @@
-defmodule TrivialCsv.SchemaError do
+defmodule DataQuacker.SchemaError do
   defexception [:message]
 end

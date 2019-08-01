@@ -1,10 +1,10 @@
-defmodule TrivialCsv.FunWrapperHelperTest do
-  use TrivialCsv.Case, async: true
+defmodule DataQuacker.FunWrapperHelperTest do
+  use DataQuacker.Case, async: true
 
-  alias TrivialCsv.Schema.WrappedFun
-  alias TrivialCsv.SchemaError
+  alias DataQuacker.Schema.WrappedFun
+  alias DataQuacker.SchemaError
 
-  alias TrivialCsv.TestModules
+  alias DataQuacker.TestModules
 
   describe "wrap_fun/2" do
     test "should wrap a function and return a wrapped function struct" do
@@ -32,7 +32,7 @@ defmodule TrivialCsv.FunWrapperHelperTest do
         Code.eval_string(
           """
           defmodule TestFunWrapper do
-            import TrivialCsv.Schema.FunWrapper
+            import DataQuacker.Schema.FunWrapper
 
             @fun wrap_fun(fn _ -> nil end, 2)
           end
@@ -46,7 +46,7 @@ defmodule TrivialCsv.FunWrapperHelperTest do
         Code.eval_string(
           """
           defmodule TestFunWrapper do
-            import TrivialCsv.Schema.FunWrapper
+            import DataQuacker.Schema.FunWrapper
 
             @fun wrap_fun(fn _, _ -> nil end, 1)
           end
@@ -62,7 +62,7 @@ defmodule TrivialCsv.FunWrapperHelperTest do
         Code.eval_string(
           """
           defmodule TestFunWrapper do
-            import TrivialCsv.Schema.FunWrapper
+            import DataQuacker.Schema.FunWrapper
 
             @fun wrap_fun(fn -> nil end, 1..2)
           end
@@ -76,7 +76,7 @@ defmodule TrivialCsv.FunWrapperHelperTest do
         Code.eval_string(
           """
           defmodule TestFunWrapper do
-            import TrivialCsv.Schema.FunWrapper
+            import DataQuacker.Schema.FunWrapper
 
             @fun wrap_fun(fn _, _, _ -> nil end, 1..2)
           end
