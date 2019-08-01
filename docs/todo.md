@@ -5,3 +5,4 @@
 - [ ] Tests for TrivialCsv (core)
 - [ ] Generalise parsing, allow adapters
 - [ ] Add test kit
+- [ ] Typespecs, Dialyzer

@@ -4,15 +4,18 @@ defmodule TrivialCsv.MixProject do
   def project do
     [
       app: :trivial_csv,
-      version: "0.0.1",
+      version: "0.1.0",
       elixir: "~> 1.8",
+      deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      description: "Trivial CSV",
-      aliases: aliases(),
       package: package(),
-      deps: deps()
+      name: "TrivialCsv",
+      description: "A library for validating transforming and parsing CSV data",
+      source_url: "https://github.com/fiodorbaczynski/trivial_csv",
+      homepage_url: "https://github.com/fiodorbaczynski/trivial_csv",
+      docs: docs()
     ]
   end
 
@@ -31,7 +34,7 @@ defmodule TrivialCsv.MixProject do
       files: ["lib", "mix.exs", "README*", "LICENSE*"],
       maintainers: ["Fiodor Baczyński"],
       licenses: ["Apache-2.0"],
-      links: %{"GitHub" => "https://github.com/fiodorbaczynski/trivial-csv"}
+      links: %{"GitHub" => "https://github.com/fiodorbaczynski/trivial_csv"}
     ]
   end
 
@@ -39,13 +42,24 @@ defmodule TrivialCsv.MixProject do
     [
       {:credo, "~> 1.1", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0.0-rc.6", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.21", only: :dev, runtime: false},
       {:csv, "~> 2.3"}
     ]
   end
 
-  defp aliases do
+  defp docs() do
     [
-      precommit: ["format --check-formatted", "credo --strict", "dialyzer"]
+      main: "TrivialCsv",
+      extras: ["README.md"],
+      source_url: "https://github.com/elixir-ecto/ecto",
+      groups_for_modules: [
+        Schema: [
+          TrivialCsv.Schema
+        ],
+        Parsing: [
+          TrivialCsv
+        ]
+      ]
     ]
   end
 end

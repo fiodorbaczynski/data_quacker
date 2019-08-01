@@ -21,3 +21,7 @@ end
 ## Contribution
 
 Any contribution, including reporting issues, is greatly appreciated. You may contribute anything you feel is needed, but the tasks listed in [todo.md](./docs/todo.md) are the most important for now for TrivialCsv to be "1.0-ready".
+
+## Testimonials
+
+"..." ~ the rubber duck on my desk
