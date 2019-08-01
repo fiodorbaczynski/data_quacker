@@ -277,10 +277,6 @@ defmodule TrivialCsv.Schema do
 
   defmacro validate(fun) do
     quote do
-      # this should be improved
-      # perhaps a `update_with` on state
-      # which would take a function as the updater?
-
       validator = wrap_fun(unquote(fun), 1..2)
 
       cond do
@@ -307,10 +303,6 @@ defmodule TrivialCsv.Schema do
 
   defmacro transform(fun) do
     quote do
-      # this should be improved
-      # perhaps a `update_with` on state
-      # which would take a function as the updater?
-
       transformer = wrap_fun(unquote(fun), 1..2)
 
       cond do
