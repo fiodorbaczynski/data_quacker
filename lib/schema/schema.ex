@@ -24,6 +24,8 @@ defmodule DataQuacker.Schema do
   also take a name as their first argument, and `row/2` and `field/3`
   take a keyword list of options as their first and second argument respectively.
 
+  More information can be found in the documentation for the specific macros.
+
   To understand how this works in practice let's take a look at an example:
 
   Suppose we have a table of students in the form of a CSV file, which looks like this:
@@ -417,6 +419,32 @@ defmodule DataQuacker.Schema do
     end
   end
 
+  @doc ~S"""
+  Defines a schema and a `schema_structure/1` function
+  which takes the schema name as the argument
+  and returns the schema in a form that can be passed to a parser.
+
+  The result structure is a map with the following types:
+  ```elixir
+  %{
+    __name__: atom(),
+    rows: list(),
+    matchers: list()
+  }
+  ```
+
+  The macro takes in a name and a block with which the rows, fields, etc. can be defined.
+  The block must contain at least one row. Note, however, that if no row is explicitly specified,
+  but at least one field is, the schema is assumed to have exactly one row which contains all of the fields.
+
+  Note: if one or many fields are present directly inside the schema, the row macro cannot be used explicitly.
+  The same is true the other way around - if at least one row is specified explicitly,
+  fields can only appear inside rows, not directly in the schema.
+
+  Unlike `row/2` and `field/3`, the `schema/2` macro cannot have validators or parsers.
+  If there is only one row, but it needs to define validators or parses,
+  the schema must define this row explicitly.
+  """
   defmacro schema(name, do: block) do
     quote do
       if not Enum.empty?(@state.cursor) do
@@ -461,6 +489,17 @@ defmodule DataQuacker.Schema do
     end
   end
 
+  @doc ~S"""
+  Defines an output row.
+  Can only be used directly inside a schema, and only if the schema has no fields
+  directly inside it.
+
+  This macro takes in a keyword list of options, and a block within which the fields,
+  validators and parsers can be specified.
+
+  ## Options
+    * `:skip_if` - a function of arity 1 or 2, which returns `true` or `false` given the value of the row and optionally the context; `true` means the row should be skipped from the output, `false` is a "noop"
+  """
   defmacro row(opts \\ [], do: block) do
     quote do
       if State.flagged?(@state, :has_loose_fields?) do
@@ -505,6 +544,19 @@ defmodule DataQuacker.Schema do
     end
   end
 
+  @doc ~S"""
+  Defines an output field.
+  Can be used inside a schema, a row or another field.
+  Can only be used directly inside a schema if the schema has no explicitly defined rows.
+  Can only be used inside another field if that field has no source.
+
+  This macro takes in a name, a keyword list of options, and a block within which the subfields or source,
+  and validators and parsers can be specified.
+  Can either specify exactly one source (virtual or regular) or subfields.
+
+  ## Options
+    * `:skip_if` - a function of arity 1 or 2, which returns `true` or `false` given the value of the field and optionally the context; `true` means the field should be skipped from the output, `false` is a "noop"
+  """
   defmacro field(name, opts \\ [], do: block) do
     quote do
       if State.cursor_at?(@state, nil) do
@@ -564,6 +616,20 @@ defmodule DataQuacker.Schema do
     end
   end
 
+  @doc ~S"""
+  Defines a source mapping from the input.
+  Can only be used inside a field, and only if that field does not define any subfields
+  or any other source.
+
+  This macro takes in either a "needle" which can be string, a regex, a list of strings,
+  or a function of arity 1 or 2.
+
+  ## Needle
+    * when is a string - the downcased header name for a particular column must contain the downcased string given as the needle for the column to match
+    * when is a regex - the header name for a particular column must match the needle for the column to match
+    * when is a list of strings - the downcase header name for a particular column must contain all of the downcased elements given as the needle for the column to match
+    * when is a function - given the header name for a particular column, and optionally the context, must return `true` for the column to match; the function must always return `true` or `false`
+  """
   defmacro source(needle) do
     {unquoted_needle, _} = Code.eval_quoted(needle)
 
@@ -635,10 +701,21 @@ defmodule DataQuacker.Schema do
     end
   end
 
-  defmacro virtual_source(data) do
-    {unquoted_data, _} = Code.eval_quoted(data)
+  @doc ~S"""
+  Defines a value to be injected to a particular field.
+  Can only be used inside a field, and only if that field does not define any subfields
+  or any other source.
 
-    case unquoted_data do
+  This macro takes in either a literal value, or a function of arity 0 or 1.
+
+  ## Value
+    * when is a function - optionally given the context, can return any value to be injected inside the field
+    * else - the value is injected inside the field "as is"
+  """
+  defmacro virtual_source(value) do
+    {unquoted_value, _} = Code.eval_quoted(value)
+
+    case unquoted_value do
       fun when is_function(fun) ->
         quote do
           if not State.cursor_at?(@state, :field) do
@@ -668,13 +745,13 @@ defmodule DataQuacker.Schema do
 
           @state State.update(@state, :field, %{
                    __type__: :sourced,
-                   source: wrap_fun(unquote(data), 0..1)
+                   source: wrap_fun(unquote(value), 0..1)
                  })
         end
 
       _ ->
         quote do
-          virtual_source(fn -> unquote(data) end)
+          virtual_source(fn -> unquote(value) end)
         end
     end
   end
