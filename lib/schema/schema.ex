@@ -113,7 +113,10 @@ defmodule DataQuacker.Schema do
   ```elixir
   %{
     # ...
-    {:ok, %{age: 123, ...},
+    {:ok, %{
+      age: 123,
+      # ...
+    }}
     # ...
   }
   ```
