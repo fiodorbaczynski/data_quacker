@@ -444,8 +444,8 @@ defmodule DataQuacker.Schema do
   The same is true the other way around - if at least one row is specified explicitly,
   fields can only appear inside rows, not directly in the schema.
 
-  Unlike `row/2` and `field/3`, the `schema/2` macro cannot have validators or parsers.
-  If there is only one row, but it needs to define validators or parses,
+  Unlike `row/2` and `field/3`, the `schema/2` macro cannot have validators or transformers.
+  If there is only one row, but it needs to define validators or transformers,
   the schema must define this row explicitly.
   """
   defmacro schema(name, do: block) do
@@ -498,10 +498,12 @@ defmodule DataQuacker.Schema do
   directly inside it.
 
   This macro takes in a keyword list of options, and a block within which the fields,
-  validators and parsers can be specified.
+  validators and transformers can be specified.
 
   ## Options
     * `:skip_if` - a function of arity 1 or 2, which returns `true` or `false` given the value of the row and optionally the context; `true` means the row should be skipped from the output, `false` is a "noop"
+
+  Note: The order of execution is always: transformers, then validators, then "skip_if"
   """
   defmacro row(opts \\ [], do: block) do
     quote do
@@ -554,11 +556,13 @@ defmodule DataQuacker.Schema do
   Can only be used inside another field if that field has no source.
 
   This macro takes in a name, a keyword list of options, and a block within which the subfields or source,
-  and validators and parsers can be specified.
+  and validators and transformers can be specified.
   Can either specify exactly one source (virtual or regular) or subfields.
 
   ## Options
     * `:skip_if` - a function of arity 1 or 2, which returns `true` or `false` given the value of the field and optionally the context; `true` means the field should be skipped from the output, `false` is a "noop"
+
+  Note: The order of execution is always: transformers, then validators, then "skip_if"
   """
   defmacro field(name, opts \\ [], do: block) do
     quote do
