@@ -759,6 +759,15 @@ defmodule DataQuacker.Schema do
     end
   end
 
+  @doc ~S"""
+  Defines a validator for a field or row.
+  Can only be used inside a field or row.
+
+  This macro takes in a function of arity 1 or 2, which will be applied to the value of the row or the filed where the validator was defined. Multiple validators are allowed, and will be executed in the order in which they are defined.
+
+  ## Fun
+    * when is a function - given the field's or row's value and optionally the context, must return either `true`, `false`, `:ok`, `:error` or a tuple `{:error, any()}`, where `true` and `ok` are the success typing, and `false`, `:error` and `{:error, any()}` are the error typing; the entire output row will be an error row if any validation inside it or inside its fields fails
+  """
   defmacro validate(fun) do
     quote do
       validator = wrap_fun(unquote(fun), 1..2)
@@ -785,6 +794,15 @@ defmodule DataQuacker.Schema do
     end
   end
 
+  @doc ~S"""
+  Defines a data transformer for a field or row.
+  Can only be used inside a field or row.
+
+  This macro takes in a function of arity 1 or 2, which will be applied to the value of the row or the filed where the transformer was defined. Multiple transformers are allowed, and will be executed in the order in which they are defined.
+
+  ## Fun
+    * when is a function - given the field's or row's value and optionally the context, must return either `{:ok, any()}`, `{:error, any()}` or `:error`, where `{:ok, any()}` is the success typing and `{:error, any()}`, and `:error` are the error typing; the second element of the success tuple is taken to be the new value of the row or field; the entire output row will be an error row if any validation inside it or inside its fields fails
+  """
   defmacro transform(fun) do
     quote do
       transformer = wrap_fun(unquote(fun), 1..2)
