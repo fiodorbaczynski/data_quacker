@@ -780,12 +780,12 @@ defmodule DataQuacker.Schema do
         State.cursor_at?(@state, :row) ->
           validators = @state |> State.get(:row) |> Map.get(:validators)
 
-          @state State.update(@state, :row, %{validators: [validator | validators]})
+          @state State.update(@state, :row, %{validators: validators ++ [validator]})
 
         State.cursor_at?(@state, :field) ->
           validators = @state |> State.get(:field) |> Map.get(:validators)
 
-          @state State.update(@state, :field, %{validators: [validator | validators]})
+          @state State.update(@state, :field, %{validators: validators ++ [validator]})
 
         true ->
           raise SchemaError, """
@@ -815,12 +815,12 @@ defmodule DataQuacker.Schema do
         State.cursor_at?(@state, :row) ->
           transformers = @state |> State.get(:row) |> Map.get(:transformers)
 
-          @state State.update(@state, :row, %{transformers: [transformer | transformers]})
+          @state State.update(@state, :row, %{transformers: transformers ++ [transformer]})
 
         State.cursor_at?(@state, :field) ->
           transformers = @state |> State.get(:field) |> Map.get(:transformers)
 
-          @state State.update(@state, :field, %{transformers: [transformer | transformers]})
+          @state State.update(@state, :field, %{transformers: transformers ++ [transformer]})
 
         true ->
           raise SchemaError, """
