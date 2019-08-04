@@ -13,7 +13,7 @@ To install the library, add it to your `mix.deps`.
 ```elixir
 def deps do
   [
-    {:data_quacker, "https://github.com/fiodorbaczynski/data_quacker.git"}
+    {:data_quacker, git: "https://github.com/fiodorbaczynski/data_quacker.git"}
   ]
 end
 ```
