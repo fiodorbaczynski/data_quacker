@@ -10,17 +10,24 @@ defmodule DataQuacker.Transformer do
   @spec call(any(), nonempty_list(WrappedFun.t()), Context.t()) :: transformation_result()
   def call(value, [transformer | rest], context) do
     case apply_transformer(value, transformer, context) do
-      {:ok, value} -> call(value, rest, context)
-      {:error, _} = error -> error
-      :error -> :error
-      el -> raise """
+      {:ok, value} ->
+        call(value, rest, context)
 
-      Transformer in #{elem(context.metadata, 0)} #{elem(context.metadata, 1)}
-      returned #{inspect(el)}.
+      {:error, _} = error ->
+        error
 
-      Transformers can only have returns of type:
-      `{:ok, any()} | {:error, any()} | :error`
-      """
+      :error ->
+        :error
+
+      el ->
+        raise """
+
+        Transformer in #{elem(context.metadata, 0)} #{elem(context.metadata, 1)}
+        returned #{inspect(el)}.
+
+        Transformers can only have returns of type:
+        `{:ok, any()} | {:error, any()} | :error`
+        """
     end
   end
 
