@@ -101,7 +101,7 @@ defmodule DataQuacker.Schema do
       end
 
       field :favourite_subject do
-        validate(fn subj -> subj in ["Maths, "Physics, "Programming"] end)
+        validate(fn subj -> subj in ["Maths", "Physics", "Programming"] end)
 
         source("favourite subject")
       end
