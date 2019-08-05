@@ -10,7 +10,7 @@ defmodule DataQuacker.Builder do
         adapter
       ) do
     with {:ok, headers} <- adapter.get_headers(source),
-         source_rows <- adapter.get_rows(source),
+         {:ok, source_rows} <- adapter.get_rows(source),
          context <-
            support_data
            |> Context.new()
@@ -128,7 +128,7 @@ defmodule DataQuacker.Builder do
          context
        ) do
     with context <- Context.update_metadata(context, :field, field_name),
-         value <- do_build_field_value(field, values, context),
+         {:ok, value} <- do_build_field_value(field, values, context),
          {:ok, value} <- Transformer.call(value, transformers, context),
          :ok <- Validator.call(value, validators, context),
          false <- Skipper.call(value, skip_if, context) do
@@ -140,11 +140,13 @@ defmodule DataQuacker.Builder do
   end
 
   defp do_build_field_value(%{__type__: :sourced, source: source}, values, context) do
-    Sourcer.call(source, values, context)
+    {:ok, Sourcer.call(source, values, context)}
   end
 
   defp do_build_field_value(%{__type__: :wrapper, subfields: subfields}, values, context) do
-    build_fields(subfields, values, context)
+    subfields
+    |> Enum.into([])
+    |> build_fields(values, context)
   end
 
   defp parse_row_values(row, column_mappings) do

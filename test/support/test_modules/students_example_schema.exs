@@ -11,7 +11,7 @@ defmodule TestModules.StudentsSchema do
         source("first name")
       end
 
-      field :first_name do
+      field :last_name do
         source("last name")
       end
     end
@@ -28,7 +28,7 @@ defmodule TestModules.StudentsSchema do
     end
 
     field :favourite_subject do
-      validate(fn subj -> subj in ["Maths", "Physics", "Programming"] end)
+      validate(fn subj, context -> subj in context.support_data.valid_subjects end)
 
       source("favourite subject")
     end
