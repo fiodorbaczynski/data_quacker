@@ -20,13 +20,4 @@ blocks:
             - mix deps.get
             - mix format --check-formatted
             - mix credo --strict
-            - mix dialyzer
-            - DB_URL=db mix test
-
-promotions:
-  - name: "Build and push"
-    pipeline_file: build-and-push.yml
-    auto_promote_on:
-      - result: passed
-        branch:
-          - workspace
+            - mix test
