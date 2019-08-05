@@ -1,0 +1,32 @@
+version: "v1.0"
+name: Tests and checks
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+  containers:
+    - name: main
+      image: semaphoreci/elixir:1.9.0
+
+blocks:
+  - name: Run tests and checks
+    task:
+      jobs:
+        - name: Build and run docker image for tests
+          commands:
+            - checkout
+            - mix local.hex --force
+            - mix local.rebar --force
+            - mix deps.get
+            - mix format --check-formatted
+            - mix credo --strict
+            - mix dialyzer
+            - DB_URL=db mix test
+
+promotions:
+  - name: "Build and push"
+    pipeline_file: build-and-push.yml
+    auto_promote_on:
+      - result: passed
+        branch:
+          - workspace
