@@ -23,7 +23,7 @@ defmodule DataQuacker.Transformer do
         raise """
 
         Transformer in #{elem(context.metadata, 0)} #{elem(context.metadata, 1)}
-        returned #{inspect(el)}.
+        returned an incorrect value #{inspect(el)}.
 
         Transformers can only have returns of type:
         `{:ok, any()} | {:error, any()} | :error`
