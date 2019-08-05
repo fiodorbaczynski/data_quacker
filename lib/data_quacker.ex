@@ -2,31 +2,24 @@ defmodule DataQuacker do
   alias DataQuacker.Builder
 
   @spec parse(String.t(), map(), any(), Keyword.t()) :: any()
-  def parse(file_path, schema, support_data, opts \\ []) do
-    with opts <- apply_defaults_opts(opts),
-         {:ok, file_stream} <- stream_file(file_path),
-         source <- decode_source(file_stream, Keyword.get(opts, :separator)) do
-      Builder.call(source, schema, support_data)
+  def parse(source, schema, support_data, opts \\ []) do
+    with opts <- apply_default_opts(opts),
+         adapter <- Keyword.get(opts, :adapter),
+         source <- adapter.parse_source(source) do
+      Builder.call(source, schema, support_data, adapter)
     end
   end
 
-  defp stream_file(file_path) do
-    {:ok, File.stream!(file_path)}
-  rescue
-    _ -> {:error, "File does not exist or is corrupted"}
+  defp apply_default_opts(opts) do
+    default_opts()
+    |> Keyword.merge(Application.get_all_env(:data_quacker))
+    |> Keyword.merge(opts)
   end
 
-  defp decode_source(source_stream, separator) do
-    source_stream
-    |> CSV.decode(separator: separator)
-    |> Enum.into([])
-    |> case do
-      [headers | rows] -> {headers, rows}
-      error -> error
-    end
-  end
-
-  defp apply_defaults_opts(opts) do
-    Keyword.merge(Application.get_all_env(:data_quacker), opts)
+  defp default_opts do
+    [
+      adapter: DataQuacker.Adapters.CSV,
+      adapter_opts: [separator: ?,, local: true]
+    ]
   end
 end

@@ -4,18 +4,19 @@ defmodule DataQuacker.Builder do
   alias DataQuacker.{Context, Matcher, Sourcer, Validator, Transformer, Skipper}
 
   def call(
-        {headers, source_rows},
+        source,
         %{__name__: schema_name, matchers: matchers, rows: schema_rows} = _schema,
-        support_data
+        support_data,
+        adapter
       ) do
-    # add casing for {:ok, headers} \ {:error, _}
-    with {:ok, headers} <- headers,
+    with {:ok, headers} <- adapter.get_headers(source),
+         source_rows <- adapter.get_rows(source),
          context <-
            support_data
            |> Context.new()
            |> Context.update_metadata(:schema, schema_name),
          {:ok, column_mappings} <- Matcher.call(headers, matchers, context) do
-      build_source_rows(source_rows, schema_rows, column_mappings, context)
+      build_source_rows(source_rows, schema_rows, column_mappings, context, adapter)
     end
   end
 
@@ -23,13 +24,23 @@ defmodule DataQuacker.Builder do
          _source_rows,
          _schema_rows,
          _column_mappings,
-         context,
-         acc \\ [],
-         all_ok? \\ true
+         _context,
+         _adapter,
+         _acc \\ [],
+         _all_ok? \\ true
        )
 
-  defp build_source_rows([source_row | rest], schema_rows, column_mappings, context, acc, all_ok?) do
+  defp build_source_rows(
+         [source_row | rest],
+         schema_rows,
+         column_mappings,
+         context,
+         adapter,
+         acc,
+         all_ok?
+       ) do
     context = Context.increment_row(context)
+    source_row = adapter.get_row(source_row)
 
     result = do_build_source_row(source_row, schema_rows, column_mappings, context)
 
@@ -38,6 +49,7 @@ defmodule DataQuacker.Builder do
       schema_rows,
       column_mappings,
       context,
+      adapter,
       result ++ acc,
       all_ok? and
         Enum.all?(result, fn
@@ -47,9 +59,9 @@ defmodule DataQuacker.Builder do
     )
   end
 
-  defp build_source_rows([], _, _, _, acc, true), do: {:ok, acc}
+  defp build_source_rows([], _, _, _, _, acc, true), do: {:ok, acc}
 
-  defp build_source_rows([], _, _, _, acc, false), do: {:error, acc}
+  defp build_source_rows([], _, _, _, _, acc, false), do: {:error, acc}
 
   defp do_build_source_row({:ok, source_row}, schema_rows, column_mappings, context) do
     values = parse_row_values(source_row, column_mappings)
