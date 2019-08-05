@@ -13,7 +13,16 @@ defmodule DataQuacker.Validator do
       :ok -> call(value, rest, context)
       true -> call(value, rest, context)
       false -> :error
-      error -> error
+      {:error, _} = error -> error
+      :error -> :error
+      el -> raise """
+
+      Validator in #{elem(context.metadata, 0)} #{elem(context.metadata, 1)}
+      returned #{inspect(el)}.
+
+      Validators can only have returns of type:
+      `:ok | :error | {:error, any()} | true | false`
+      """
     end
   end
 
@@ -26,7 +35,7 @@ defmodule DataQuacker.Validator do
     callable.(value)
   end
 
-  @spec apply_validation(any(), WrappedFun.t(2), Context.t()) :: validation_result()
+  @spec apply_validation(any(), WrappedFun.t(2), Context.t()) :: validation_result() | true | false
   defp apply_validation(value, %WrappedFun{callable: callable, arity: 2}, context) do
     callable.(value, context)
   end
