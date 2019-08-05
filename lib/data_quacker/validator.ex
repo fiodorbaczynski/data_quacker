@@ -29,7 +29,7 @@ defmodule DataQuacker.Validator do
         raise """
 
         Validator in #{elem(context.metadata, 0)} #{elem(context.metadata, 1)}
-        returned #{inspect(el)}.
+        returned an incorrect value #{inspect(el)}.
 
         Validators can only have returns of type:
         `:ok | :error | {:error, any()} | true | false`

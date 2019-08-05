@@ -235,4 +235,34 @@ defmodule DataQuacker.Schema.StateTest do
                State.update(state, :field, %{some_field: 123})
     end
   end
+
+  describe "get/2" do
+    setup do
+      state_with_schema = State.register(%State{}, :schema, {:abc, %{}})
+      state_with_row = State.register(state_with_schema, :row, {0, %{}})
+      state_with_field = State.register(state_with_row, :field, {:def, %{}})
+      state_with_nested_field = State.register(state_with_field, :field, {:ghi, %{}})
+
+      {:ok,
+       state_with_schema: state_with_schema,
+       state_with_row: state_with_row,
+       state_with_field: state_with_field,
+       state_with_nested_field: state_with_nested_field}
+    end
+
+    test "should return a row if requested", %{state_with_row: state_with_row} do
+      assert State.get(state_with_row, :row) == Enum.at(state_with_row.rows, 0)
+    end
+
+    test "should return a field if requested", %{state_with_field: state_with_field} do
+      assert State.get(state_with_field, :field) == Map.get(state_with_field.fields, :def)
+    end
+
+    test "should return a nested field if requested", %{
+      state_with_nested_field: state_with_nested_field
+    } do
+      assert State.get(state_with_nested_field, :field) ==
+               get_in(state_with_nested_field.fields, [:def, :subfields, :ghi])
+    end
+  end
 end
