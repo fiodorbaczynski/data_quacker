@@ -3,7 +3,7 @@
 - [x] Throw a meaningful exception if a transformer or validator returns an unexpected data type
 - [x] Basic documentation
 - [x] Generalise parsing, allow adapters
-- [ ] Guard against fields or schemas with non-atom names
+- [x] Guard against fields or schemas with non-atom names
 - [ ] Guard against two fields of identical name in the same parent, two schemas of identical name within the same module
 - [ ] Tests for Schema
 - [ ] Tests for DataQuacker (core)
