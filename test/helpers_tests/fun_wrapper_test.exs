@@ -4,25 +4,45 @@ defmodule DataQuacker.FunWrapperHelperTest do
   alias DataQuacker.Schema.WrappedFun
   alias DataQuacker.SchemaError
 
-  alias DataQuacker.TestModules
+  defmodule SampleWrappedFunctions do
+    import DataQuacker.Schema.FunWrapper
+
+    @fun0 wrap_fun(fn ->
+            "no args"
+          end)
+
+    @fun1 wrap_fun(fn arg1 ->
+            arg1
+          end)
+
+    @fun2 wrap_fun(fn arg1, arg2 ->
+            {arg1, arg2}
+          end)
+
+    def wrapped_fun0 do
+      @fun0
+    end
+
+    def wrapped_fun1 do
+      @fun1
+    end
+
+    def wrapped_fun2 do
+      @fun2
+    end
+  end
 
   describe "wrap_fun/2" do
     test "should wrap a function and return a wrapped function struct" do
-      assert [{TestModules.SampleWrappedFunctions, _}] =
-               compile_file("sample_wrapped_functions.exs")
-
-      assert %WrappedFun{callable: fun0, arity: 0} =
-               TestModules.SampleWrappedFunctions.wrapped_fun0()
+      assert %WrappedFun{callable: fun0, arity: 0} = SampleWrappedFunctions.wrapped_fun0()
 
       assert fun0.() == "no args"
 
-      assert %WrappedFun{callable: fun1, arity: 1} =
-               TestModules.SampleWrappedFunctions.wrapped_fun1()
+      assert %WrappedFun{callable: fun1, arity: 1} = SampleWrappedFunctions.wrapped_fun1()
 
       assert fun1.("a") == "a"
 
-      assert %WrappedFun{callable: fun2, arity: 2} =
-               TestModules.SampleWrappedFunctions.wrapped_fun2()
+      assert %WrappedFun{callable: fun2, arity: 2} = SampleWrappedFunctions.wrapped_fun2()
 
       assert fun2.("a", "b") == {"a", "b"}
     end
