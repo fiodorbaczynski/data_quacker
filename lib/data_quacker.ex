@@ -4,8 +4,8 @@ defmodule DataQuacker do
   @spec parse(String.t(), map(), any(), Keyword.t()) :: any()
   def parse(source, schema, support_data, opts \\ []) do
     with opts <- apply_default_opts(opts),
-         adapter <- Keyword.get(opts, :adapter),
-         source <- adapter.parse_source(source) do
+         adapter <- get_adapter(opts),
+         {:ok, source} <- adapter.parse_source(source, get_adapter_opts(opts)) do
       Builder.call(source, schema, support_data, adapter)
     end
   end
@@ -21,5 +21,13 @@ defmodule DataQuacker do
       adapter: DataQuacker.Adapters.CSV,
       adapter_opts: [separator: ?,, local: true]
     ]
+  end
+
+  defp get_adapter(opts) do
+    Keyword.get(opts, :adapter)
+  end
+
+  defp get_adapter_opts(opts) do
+    Keyword.get(opts, :adapter_opts, [])
   end
 end
