@@ -53,8 +53,8 @@ defmodule DataQuacker.Examples.StudentsExampleTest do
 
   describe "students example" do
     @tag :integration
-    test "should parse sample data given the students schema and return an error if any of the rows has invalid data" do
-      {:error, [row4, row3, row2, row1]} =
+    test "should parse sample data given the students schema" do
+      assert {:error, [row4, row3, row2, row1]} =
         DataQuacker.parse(
           %{
             headers: ["First name", "Last name", "Age", "Favourite subject"],
