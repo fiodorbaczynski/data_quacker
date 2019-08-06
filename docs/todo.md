@@ -4,8 +4,7 @@
 - [ ] Documentation
 - [ ] Tests for Schema
 - [ ] Tests for DataQuacker (core)
-- [ ] Generalise parsing, allow adapters
-- [ ] Add test kit
+- [x] Generalise parsing, allow adapters
 - [ ] Typespecs, Dialyzer
 - [ ] Guard against two fields of identical name in the same parent, two schemas of identical name within the same module
 - [ ] Guard against fields or schemas with non-atom names
