@@ -57,7 +57,13 @@ defmodule DataQuacker.MixProject do
           DataQuacker.Schema
         ],
         Parsing: [
-          DataQuacker
+          DataQuacker,
+          DataQuacker.Context
+        ],
+        Adapters: [
+          DataQuacker.Adapter,
+          DataQuacker.Adapters.CSV,
+          DataQuacker.Adapters.Identity
         ]
       ]
     ]

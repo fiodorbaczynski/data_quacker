@@ -26,6 +26,8 @@ defmodule DataQuacker.Adapter do
   In case of success the resulting list will be treated
   as the list of columns in a row of the source.
 
+  > Note: The resulting list in the `get_row/1` function must be of the same length as the resulting list in the `get_headers/1` function.
+
   For an example implementation take a look at the built-in adapters.
 
   > The rationale behind this API for adapters is that, depending on the source, potential errors may occur at different stages of parsing the source. For example the CSV library included in the default CSV adapter returns a tuple with `:ok` or `:error`as the first element for each row. However, some external APIs, like Google Sheets, return a list of rows without specifying for each whether it's valid or not. Therefore we need for it to be possible to specify that for each row, but not required for an adapter to eagerly iterate over all of the rows and wrap them in a tuple with `:ok`.

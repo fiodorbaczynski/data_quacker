@@ -7,13 +7,20 @@ defmodule DataQuacker.Adapters.CSV do
 
   ## Example source
 
-  `"path/to/csv/file.csv"`
-  `"https://remote_file.com/file/abc`
+  - Local file path: `"path/to/csv/file.csv"`
+  - Remote file url: `"https://remote_file.com/file/abc"`
   """
 
   @behaviour DataQuacker.Adapter
 
   @impl true
+  @doc ~S"""
+  Takes in a string with the path or url to the file, and a keyword list of options.
+
+  ## Options
+  - `:separator` - the ASCII value of the column separator in the CSV file; usually retrieved with the `?*` notation where "*" is the character, for example: `?,` for a comma, `?;` for a semicolon, etc.
+  - `:local?` - a boolean flag representing whether the file is present on the local file system or on a remote server
+  """
   def parse_source(file_path_or_url, opts) do
     case get_file(file_path_or_url, opts) do
       {:ok, raw_data} -> decode_source(raw_data, get_separator(opts))
@@ -22,7 +29,7 @@ defmodule DataQuacker.Adapters.CSV do
   end
 
   defp get_file(file_path_or_url, opts) do
-    case Keyword.get(opts, :local, true) do
+    case Keyword.get(opts, :local?, true) do
       true -> stream_file(file_path_or_url)
       _ -> File.read_link(file_path_or_url)
     end

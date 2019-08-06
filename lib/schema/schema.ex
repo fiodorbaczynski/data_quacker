@@ -3,7 +3,7 @@ defmodule DataQuacker.Schema do
   Defines macros for creating data schemas
   which represents a mapping from the source to the desired output.
 
-  Note: To use the macros you have to put `use DataQuacker.Schema` in the desired module.
+  > Note: To use the macros you have to put `use DataQuacker.Schema` in the desired module.
 
   A schema can be defined to represent the structure of an arbitrarily nested map or list of maps.
   This is done with the `schema/2`, `row/2` and `field/3` macros.
@@ -13,7 +13,7 @@ defmodule DataQuacker.Schema do
   These allow for validation and transformation to be performed
   on a specific subset of the output data.
 
-  Note: the `row/2` and `field/3` macros represent the *output* structure,
+  > Note: the `row/2` and `field/3` macros represent the *output* structure,
   while the `source/1` and `virtual_source/1` macros reference the input data.
   Since both the input and the output can be said to have rows,
   the term "source row" is used in the documentation to denote a row in the input data.
@@ -26,7 +26,7 @@ defmodule DataQuacker.Schema do
 
   More information can be found in the documentation for the specific macros.
 
-  To understand how this works in practice let's take a look at an example:
+  ## Examples
 
   Suppose we have a table of students in the form of a CSV file, which looks like this:
 
@@ -36,7 +36,7 @@ defmodule DataQuacker.Schema do
   | Adam       | Johnson   | 18  | Physics           |
   | Quackers   | the Duck  | 1   | Programming       |
 
-  Also suppose our desired output is a list of tuples with maps with the following structure
+  Also suppose our desired output is a list of tuples with maps with the following structure:
 
   ```elixir
   {:ok, %{
@@ -111,15 +111,17 @@ defmodule DataQuacker.Schema do
 
   Now our result will be a list of maps, like:
   ```elixir
-  %{
+  [
     # ...
     {:ok, %{
       age: 123,
       # ...
     }}
     # ...
-  }
+  ]
   ```
+
+  > Note: To see how to use such schema to parse a CSV file, please see the example in the documentation for the `DataQuacker` module.
 
   However if, for example, an invalid age is given,
   the entire row where the error occurred will result in the following tuple:
@@ -157,14 +159,14 @@ defmodule DataQuacker.Schema do
   Now our output is:
 
   ```elixir
-  [
+  {:ok, [
     #...
     {:ok, %{
       full_name: "John Smith",
       # ...
     }}
     #...
-  ]
+  ]}
   ```
 
   To illustrate some more functionality, let's take a look at another example.
@@ -208,12 +210,16 @@ defmodule DataQuacker.Schema do
   ```
 
   The above results in:
+  ```elixir
   [
-    {:ok, %{size: 40, price: 1000}},
-    {:ok, %{size: 50, price: 1100}}
+    {:ok, %{size: 50, price: 1100}},
+    {:ok, %{size: 40, price: 1000}}
   ]
+  ```
 
-  This schema would work, but there are a couple of problems with it.
+  > Note: The rows in the result are in the reverse order compared to the source rows. This is because for large lists reversing may be an expensive operation, which is often redundant, for example if the result is supposed to be inserted in a database.
+
+  This schema could work, but there are a couple of problems with it.
   First of all, it's not fun to copy&paste the function for parsing string to int
   over and over again. That's why we'll create a regular function
   and pass a reference to it in both places.
@@ -224,12 +230,12 @@ defmodule DataQuacker.Schema do
 
     schema :pricing do
       field :size do
-        transform(&MyModule.parse_int/1)
+        transform(&PricingSchema.parse_int/1)
         # ...
       end
 
       field :price do
-        transform(&MyModule.parse_int/1)
+        transform(&PricingSchema.parse_int/1)
         # ...
       end
     end
@@ -243,7 +249,7 @@ defmodule DataQuacker.Schema do
   end
   ```
 
-  Note: the reference to the function must be written out in full (including the module name),
+  > Note: the reference to the function must be written out in full (including the module name),
   because it will be executed in a different context.
 
   This is better, but still not ideal for two reasons.
@@ -258,12 +264,13 @@ defmodule DataQuacker.Schema do
   in the docs for the `source/1` macro, but for now we will just us a list of strings.
 
   `source("Apartment/flat size (in m^2)")` -> `source(["apartment", "size"])`
+
   `source("Apartment/flat size (in m^2)")` -> `source(["price", "1"])`
 
   The above mean "match a header which contains apartment and size"
   and "match a header which contains apartment and 1".
 
-  Note: The order of the headers is inconsequential.
+  > Note: The order of the headers is inconsequential.
 
   As for the second issue, transform can actually be given a one- or two-argument function.
   If it is given a one-argument function, the argument at execution will be the value of the field
@@ -276,7 +283,7 @@ defmodule DataQuacker.Schema do
   and the second one is the name or index in the case of a row.
   The second one is just the index of the source row which is being processed.
 
-  Note: the term "source row" is used here to denote a row in the input file. The term row
+  > Note: the term "source row" is used here to denote a row in the input file. The term row
   is used to denote a row of output.
 
   We can therefore change our `parse_int/1` function into
@@ -292,7 +299,7 @@ defmodule DataQuacker.Schema do
 
   An example error will look like this: `{:error, "Error processing field price in row 2; 'oops' given"}`
 
-  The last case we will be dealing with here is again a "small change" to the file.
+  The next case we will be dealing with here is again a "small change" to the source file.
 
   | Apartment/flat size (in m^2) | Price per 1 month | Price per 3 months |
   |:----------------------------:|:-----------------:|--------------------|
@@ -307,14 +314,16 @@ defmodule DataQuacker.Schema do
   We could create a schema to parse the data int rows like:
   `%{size: 40, price_1: 1000, price_3: 2800}`,
   but this is not ideal since we would have to deal with `nil` at `:price_1`,
-  and we probably want separate rows in the database for each price and lease duration,
-  as this allows us to easily pull out the price for a specific size and lease duration.
+  and we probably want separate rows in the database for each lease duration,
+  as this will allow us to easily pull out the price for a specific size and lease duration
+  using SQL indexes.
+
   A better structure therefore would look like this
   ```elixir
   [
-    {:ok, %{size: 40, duration: 1, price: 1000}},
-    {:ok, %{size: 40, duration: 3, price: 2800}}
     # ...
+    {:ok, %{size: 40, duration: 3, price: 2800}},
+    {:ok, %{size: 40, duration: 1, price: 1000}}
   ]
   ```
 
@@ -331,7 +340,7 @@ defmodule DataQuacker.Schema do
     schema :pricing do
       row skip_if: (fn %{price: price} -> is_nil(price) end) do
         field :size do
-          transform(&MyModule.parse_int/1)
+          transform(&PricingSchema.parse_int/2)
 
           source(["apartment", "size"])
         end
@@ -341,7 +350,7 @@ defmodule DataQuacker.Schema do
         end
 
         field :price do
-          transform(&MyModule.parse_int/1)
+          transform(&PricingSchema.parse_int/2)
 
           source(["price", "1"])
         end
@@ -349,7 +358,7 @@ defmodule DataQuacker.Schema do
 
       row do
         field :size do
-          transform(&MyModule.parse_int/1)
+          transform(&PricingSchema.parse_int/2)
 
           source(["apartment", "size"])
         end
@@ -359,7 +368,7 @@ defmodule DataQuacker.Schema do
         end
 
         field :price do
-          transform(&MyModule.parse_int/1)
+          transform(&PricingSchema.parse_int/2)
 
           source(["price", "3"])
         end
@@ -388,8 +397,8 @@ defmodule DataQuacker.Schema do
   which either takes a value or a function returning a value to be injected into the field.
   This is useful for us to be able to make the output structure as close to our database model as we can.
 
-  Note: There is a special case in the `parse_int/2` function to return nil on empty input,
-  because `Integer.parse/1` will return an error given an empty string.
+  > Note: There is a special case in the `parse_int/2` function to return nil on empty input,
+  because `Integer.parse/2` will return an error given an empty string.
 
   Lastly, we added a special option to the first output row, called `skip_if`.
   The function we provided will be evaluated for each output row representing a one-month lease price,
@@ -398,12 +407,143 @@ defmodule DataQuacker.Schema do
   Using our latest schema and the CSV presented above, we get this result:
   ```elixir
   [
-    {:ok, %{size: 40, duration: 1, price: 1000}},
-    {:ok, %{size: 40, duration: 3, price: 2800}},
-    {:ok, %{size: 50, duration: 1, price: 1100}},
-    {:ok, %{size: 50, duration: 3, price: 3000}},
-    {:ok, %{size: 50, duration: 1, price: 3600}}
+    ok: %{duration: 1, price: 3600, size: 50},
+    ok: %{duration: 3, price: 3000, size: 50},
+    ok: %{duration: 1, price: 1100, size: 50},
+    ok: %{duration: 3, price: 2800, size: 40},
+    ok: %{duration: 1, price: 1000, size: 40}
   ]
+  ```
+
+  The last case is about multiple transformations on the same field.
+
+  Our source file has changed again, so that it includes some non-integer prices.
+  We could just switch our usage of `Integer.parse/2` to `Decimal.parse/1`,
+  but there is a catch: `Decimal.parse/1` expects `.` (dot) to be the decimal separator,
+  and our source uses `,` (comma).
+  For this reason we will need to first replace the commas with periods, and then convert.
+
+  As the transformer we provide for the `:price` field is an arbitrary Elixir function,
+  we could do both of those operations at once.
+  That would work, but for schemas which have very complex transformation and validation rules,
+  the function could get bloated quickly.
+
+  The goal of this library is to avoid that complexity, and allow for easy understanding
+  of the custom rules. This is why it's recommended to split te transformers into multiple functions.
+
+  Let's create two functions: `parse_decimal/2` and `replace_commas/1`.
+
+  > Note: To follow this example you will have to install the `Decimal` library, which you can find at [hex.pm/packages/decimal](https://hex.pm/packages/decimal).
+
+  ```elixir
+  def replace_commas(str) do
+    {:ok, String.replace(str, ",", ".")}
+  end
+
+  def parse_decimal("", _), do: {:ok, nil}
+
+  def parse_decimal(str, %{metadata: metadata, source_row: source_row}) do
+    case Decimal.parse(str) do
+      {decimal, _} -> {:ok, decimal}
+      :error -> {:error, "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
+    end
+  end
+  ```
+
+  We can now change our `:price` fields to use these functions:
+
+  ```elixir
+  # ...
+
+  field :price do
+    transform(&PricingSchema.replace_commas/1)
+    transform(&PricingSchema.parse_decimal/2)
+
+    source(["price", "1"])
+  end
+
+  # ...
+
+  field :price do
+    transform(&PricingSchema.replace_commas/1)
+    transform(&PricingSchema.parse_decimal/2)
+
+    source(["price", "3"])
+  end
+
+  # ...
+  ```
+
+  > Note: Different transformers for the same field or row may take different numbers of arguments, depending on whether the context is needed in the particular function.
+
+  The final schema should look like this:
+
+  ```elixir
+  defmodule PricingSchema do
+    use DataQuacker.Schema
+
+    schema :pricing do
+      row skip_if: (fn %{price: price} -> is_nil(price) end) do
+        field :size do
+          transform(&PricingSchema.parse_int/2)
+
+          source(["apartment", "size"])
+        end
+
+        field :duration do
+          virtual_source(1)
+        end
+
+        field :price do
+          transform(&PricingSchema.replace_commas/1)
+          transform(&PricingSchema.parse_decimal/2)
+
+          source(["price", "1"])
+        end
+      end
+
+      row do
+        field :size do
+          transform(&PricingSchema.parse_int/2)
+
+          source(["apartment", "size"])
+        end
+
+        field :duration do
+          virtual_source(1)
+        end
+
+        field :price do
+          transform(&PricingSchema.replace_commas/1)
+          transform(&PricingSchema.parse_decimal/2)
+
+          source(["price", "3"])
+        end
+      end
+    end
+
+    def parse_int("", _), do: {:ok, nil}
+
+    def parse_int(str, %{metadata: metadata, source_row: source_row}) do
+      case Integer.parse(str) do
+        {int, _} -> {:ok, int}
+        :error -> {:error, "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
+      end
+    end
+
+    def replace_commas(str) do
+      {:ok, String.replace(str, ",", ".")}
+    end
+
+    def parse_decimal("", _), do: {:ok, nil}
+
+    def parse_decimal(str, %{metadata: metadata, source_row: source_row}) do
+      case Decimal.parse(str) do
+        {decimal, _} -> {:ok, decimal}
+        :error -> {:error, "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
+      end
+    end
+  end
   ```
   """
 
@@ -427,6 +567,8 @@ defmodule DataQuacker.Schema do
   which takes the schema name as the argument
   and returns the schema in a form that can be passed to a parser.
 
+  Multiple schemas can be defined in a single module.
+
   The result structure is a map with the following types:
   ```elixir
   %{
@@ -440,7 +582,7 @@ defmodule DataQuacker.Schema do
   The block must contain at least one row. Note, however, that if no row is explicitly specified,
   but at least one field is, the schema is assumed to have exactly one row which contains all of the fields.
 
-  Note: if one or many fields are present directly inside the schema, the row macro cannot be used explicitly.
+  > Note: if one or many fields are present directly inside the schema, the row macro cannot be used explicitly.
   The same is true the other way around - if at least one row is specified explicitly,
   fields can only appear inside rows, not directly in the schema.
 
@@ -503,7 +645,7 @@ defmodule DataQuacker.Schema do
   ## Options
     * `:skip_if` - a function of arity 1 or 2, which returns `true` or `false` given the value of the row and optionally the context; `true` means the row should be skipped from the output, `false` is a "noop"
 
-  Note: The order of execution is always: transformers, then validators, then "skip_if"
+  > Note: The order of execution is always: transformers, then validators, then "skip_if".
   """
   defmacro row(opts \\ [], do: block) do
     quote do
@@ -562,7 +704,7 @@ defmodule DataQuacker.Schema do
   ## Options
     * `:skip_if` - a function of arity 1 or 2, which returns `true` or `false` given the value of the field and optionally the context; `true` means the field should be skipped from the output, `false` is a "noop"
 
-  Note: The order of execution is always: transformers, then validators, then "skip_if"
+  > Note: The order of execution is always: transformers, then validators, then "skip_if"
   """
   defmacro field(name, opts \\ [], do: block) do
     quote do
@@ -767,7 +909,9 @@ defmodule DataQuacker.Schema do
   Defines a validator for a field or row.
   Can only be used inside a field or row.
 
-  This macro takes in a function of arity 1 or 2, which will be applied to the value of the row or the filed where the validator was defined. Multiple validators are allowed, and will be executed in the order in which they are defined.
+  This macro takes in a function of arity 1 or 2, which will be applied to the value of the row or the field where the validator was defined. Multiple validators are allowed, and will be executed in the order in which they are defined.
+
+  > Note: To use validators on a row, the row must be defined explicitly. Implicit rows cannot have validators.
 
   ## Fun
     * when is a function - given the field's or row's value and optionally the context, must return either `true`, `false`, `:ok`, `:error` or a tuple `{:error, any()}`, where `true` and `ok` are the success typing, and `false`, `:error` and `{:error, any()}` are the error typing; the entire output row will be an error row if any validation inside it or inside its fields fails
@@ -802,7 +946,9 @@ defmodule DataQuacker.Schema do
   Defines a data transformer for a field or row.
   Can only be used inside a field or row.
 
-  This macro takes in a function of arity 1 or 2, which will be applied to the value of the row or the filed where the transformer was defined. Multiple transformers are allowed, and will be executed in the order in which they are defined.
+  This macro takes in a function of arity 1 or 2, which will be applied to the value of the row or the field where the transformer was defined. Multiple transformers are allowed, and will be executed in the order in which they are defined.
+
+  > Note: To use transformers on a row, the row must be defined explicitly. Implicit rows cannot have transformers.
 
   ## Fun
     * when is a function - given the field's or row's value and optionally the context, must return either `{:ok, any()}`, `{:error, any()}` or `:error`, where `{:ok, any()}` is the success typing and `{:error, any()}`, and `:error` are the error typing; the second element of the success tuple is taken to be the new value of the row or field; the entire output row will be an error row if any validation inside it or inside its fields fails

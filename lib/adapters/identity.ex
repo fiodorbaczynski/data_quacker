@@ -22,6 +22,11 @@ defmodule DataQuacker.Adapters.Identity do
   @behaviour DataQuacker.Adapter
 
   @impl true
+  @doc ~S"""
+  Takes in a map with `:headers` and `:rows` keys, where the value under `:headers` is a list of strings, and the value under `:rows` is a list of lists of anything.
+
+  > Note: Each list in in the rows list must be of the same length as the headers list.
+  """
   def parse_source(source, _opts) do
     {:ok, source}
   end

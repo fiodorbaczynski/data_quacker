@@ -1,12 +1,24 @@
 defmodule DataQuacker.Context do
-  @moduledoc """
+  @moduledoc ~S"""
   This module provides a struct
   to hold contextual data
   for CSV parsing
+
+  ## Metadata
+
+  Metadata is a tuple of an atom and another atom or a non-negative integer. The first is the type of the entity currently being processed (`:field`, `:row`, etc.). The second is the name or index of the entity (name in case of a field, index in case of row).
+
+  ## Support data
+
+  Support data can be of any Elixir data type. It is the exact value passed as support_data to the `DataQuacker.parse/4` at runtime.
+
+  ## Source row
+
+  Source row is a a non-negative integer. The value is the index of the source row currently being processed.
   """
 
   @type t :: %__MODULE__{
-          metadata: {atom(), atom()},
+          metadata: {atom(), atom() | non_neg_integer()},
           support_data: any(),
           source_row: non_neg_integer()
         }

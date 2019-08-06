@@ -28,12 +28,12 @@ defmodule DataQuacker.Skipper do
     end
   end
 
-  @spec apply_function(any(), WrappedFun.t(1), Context.t()) :: skipper_result()
+  @spec apply_function(any(), WrappedFun.t(1), Context.t()) :: any()
   defp apply_function(%WrappedFun{arity: 1, callable: callable}, value, _context) do
     callable.(value)
   end
 
-  @spec apply_function(any(), WrappedFun.t(2), Context.t()) :: skipper_result()
+  @spec apply_function(any(), WrappedFun.t(2), Context.t()) :: any()
   defp apply_function(%WrappedFun{arity: 2, callable: callable}, value, context) do
     callable.(value, context)
   end

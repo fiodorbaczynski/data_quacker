@@ -40,14 +40,12 @@ defmodule DataQuacker.Validator do
   @spec call(any(), [], Context.t()) :: :ok
   def call(_, [], _), do: :ok
 
-  @spec apply_validation(any(), WrappedFun.t(1), Context.t()) ::
-          validation_result() | true | false
+  @spec apply_validation(any(), WrappedFun.t(1), Context.t()) :: any()
   defp apply_validation(value, %WrappedFun{callable: callable, arity: 1}, _context) do
     callable.(value)
   end
 
-  @spec apply_validation(any(), WrappedFun.t(2), Context.t()) ::
-          validation_result() | true | false
+  @spec apply_validation(any(), WrappedFun.t(2), Context.t()) :: any()
   defp apply_validation(value, %WrappedFun{callable: callable, arity: 2}, context) do
     callable.(value, context)
   end
