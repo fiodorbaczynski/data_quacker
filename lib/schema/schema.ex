@@ -590,7 +590,7 @@ defmodule DataQuacker.Schema do
   If there is only one row, but it needs to define validators or transformers,
   the schema must define this row explicitly.
   """
-  defmacro schema(name, do: block) do
+  defmacro schema(name, do: block) when is_atom(name) do
     quote do
       if not Enum.empty?(@state.cursor) do
         raise SchemaError, """
@@ -631,6 +631,16 @@ defmodule DataQuacker.Schema do
       def schema_structure(unquote(name)) do
         @state.schema
       end
+    end
+  end
+
+  defmacro schema(name, do: _block) do
+    quote do
+      raise SchemaError, """
+
+      Invalid schema name.
+      Must be an atom, #{inspect(unquote(name))} given.
+      """
     end
   end
 
@@ -706,7 +716,9 @@ defmodule DataQuacker.Schema do
 
   > Note: The order of execution is always: transformers, then validators, then "skip_if"
   """
-  defmacro field(name, opts \\ [], do: block) do
+  defmacro field(_name, _opts \\ [], _)
+
+  defmacro field(name, opts, do: block) when is_atom(name) do
     quote do
       if State.cursor_at?(@state, nil) do
         raise SchemaError, """
@@ -762,6 +774,16 @@ defmodule DataQuacker.Schema do
       end
 
       @state State.cursor_exit(@state)
+    end
+  end
+
+  defmacro field(name, _opts, do: _block) do
+    quote do
+      raise SchemaError, """
+
+      Invalid field name.
+      Must be an atom, #{inspect(unquote(name))} given.
+      """
     end
   end
 
