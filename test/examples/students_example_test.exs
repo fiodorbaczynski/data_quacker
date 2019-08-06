@@ -55,20 +55,20 @@ defmodule DataQuacker.Examples.StudentsExampleTest do
     @tag :integration
     test "should parse sample data given the students schema" do
       assert {:error, [row4, row3, row2, row1]} =
-        DataQuacker.parse(
-          %{
-            headers: ["First name", "Last name", "Age", "Favourite subject"],
-            rows: [
-              ["John", "Smith", "19", "Maths"],
-              ["Adam", "Johnson", "18", "Physics"],
-              ["Quackers", "the Duck", "1", "Programming"],
-              ["Mat", "Savage", "100", "None"]
-            ]
-          },
-          StudentsSchema.schema_structure(:students),
-          %{valid_subjects: ["Maths", "Physics", "Programming"]},
-          adapter: IdentityAdapter
-        )
+               DataQuacker.parse(
+                 %{
+                   headers: ["First name", "Last name", "Age", "Favourite subject"],
+                   rows: [
+                     ["John", "Smith", "19", "Maths"],
+                     ["Adam", "Johnson", "18", "Physics"],
+                     ["Quackers", "the Duck", "1", "Programming"],
+                     ["Mat", "Savage", "100", "None"]
+                   ]
+                 },
+                 StudentsSchema.schema_structure(:students),
+                 %{valid_subjects: ["Maths", "Physics", "Programming"]},
+                 adapter: IdentityAdapter
+               )
 
       assert row1 == {:ok, %{age: 19, favourite_subject: "Maths", full_name: "John Smith"}}
       assert row2 == {:ok, %{age: 18, favourite_subject: "Physics", full_name: "Adam Johnson"}}
