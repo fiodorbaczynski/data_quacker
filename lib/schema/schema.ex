@@ -559,6 +559,7 @@ defmodule DataQuacker.Schema do
       import unquote(__MODULE__)
 
       @state State.new()
+      @schema_names []
     end
   end
 
@@ -592,6 +593,15 @@ defmodule DataQuacker.Schema do
   """
   defmacro schema(name, do: block) when is_atom(name) do
     quote do
+      if unquote(name) in @schema_names do
+        raise SchemaError, """
+
+        Invalid schema name.
+        There already exists a schema #{inspect(unquote(name))}
+        on this module.
+        """
+      end
+
       if not Enum.empty?(@state.cursor) do
         raise SchemaError, """
 
@@ -749,6 +759,25 @@ defmodule DataQuacker.Schema do
         Invalid field usage.
         A field can either have subfields or a source,
         but not both.
+        """
+      end
+
+      if State.cursor_at?(@state, :row) and Map.has_key?(@state.fields, unquote(name)) do
+        raise SchemaError, """
+
+        Invalid field name.
+        There already exists a field of the same name
+        in this row.
+        """
+      end
+
+      if State.cursor_at?(@state, :field) and
+           Map.has_key?(State.get(@state, :field).subfields, unquote(name)) do
+        raise SchemaError, """
+
+        Invalid field name.
+        There already exists a subfield of the same name
+        in this field.
         """
       end
 
