@@ -14,7 +14,7 @@ defmodule DataQuacker do
   - `DataQuacker.Schema`, which a DSL for declaratively defining schemas which describe the mapping between the source data and the desired output
   - `DataQuacker.Adapters.CSV` and `DataQuacker.Adapters.Identity`, which extract data from sources into a format required by the  `parse/4` function
 
-  > Note: Writing this documentation is a challenge since the complexity of this library stems from the possibility of parsing arbitrary data into arbitrarily nested maps with arbitrary rules for any fields and rows (you can see some examples in `DataQuacker.Schema`). For this reason not everything may be clear to a user from just reading the documentation. In most cases if you do something that is not allowed, you will get a compile-time error with a helpful message. However, if you find anything unclear after reading this documentation, or that you have to "fight" with the tool, please do not hesitate to open a pull request or an issue on the github repo. The idea behind this project is to help people (including myself) rid themselves of the pains associated with parsing unstructured data, not add to it.
+  > Note: If you find anything missing from or unclear in the documentation, please do not hesitate to open an issue on the project's [Github repository](https://github.com/fiodorbaczynski/data_quacker).
 
   ## Examples
 
