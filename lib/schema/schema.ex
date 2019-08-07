@@ -28,6 +28,8 @@ defmodule DataQuacker.Schema do
 
   ## Examples
 
+  > Note: A fully working implementation of these examples can be found in the tests inside the "examples" directory.
+
   Suppose we have a table of students in the form of a CSV file, which looks like this:
 
   | First name | Last name | Age | Favourite subject |

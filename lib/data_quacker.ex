@@ -16,9 +16,24 @@ defmodule DataQuacker do
 
   > Note: If you find anything missing from or unclear in the documentation, please do not hesitate to open an issue on the project's [Github repository](https://github.com/fiodorbaczynski/data_quacker).
 
+  ## Testing
+
+  The tests for parsing data which is external or non-sandboxed are often difficult to implement well,
+  since that data may need to change over time.
+  For example, editing CSV files used for tests, when the requirements change,
+  can be tedious.
+
+  For this reason, using a different adapter, which takes Elixir data as the input, for tests is recommend.
+  In integration tests for this library the `DataQuacker.Adapters.Identity` adapter is used.
+
+  The easiest way to switch out adapters in tests is to put the desired adapter in the `test.exs` config.
+  You can find out how to do this under the "Options" section in the documentation for the `parse/4` function.
+
   ## Examples
 
   > Note: Most of the "juice", like transforming, validating, nesting, skipping, etc., is in the `DataQuacker.Schema` module, so the more complex and interesting examples also live there. Please take a look at its documentation for more in-depth examples.
+
+  > Note: A fully working implementation of these examples can be found in the tests inside the "examples" directory.
 
   Given the following table of ducks in a pond, in the form of a CSV file:
 
