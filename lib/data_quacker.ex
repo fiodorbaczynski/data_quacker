@@ -16,9 +16,9 @@ defmodule DataQuacker do
 
   > Note: Writing this documentation is a challenge since the complexity of this library stems from the possibility of parsing arbitrary data into arbitrarily nested maps with arbitrary rules for any fields and rows (you can see some examples in `DataQuacker.Schema`). For this reason not everything may be clear to a user from just reading the documentation. In most cases if you do something that is not allowed, you will get a compile-time error with a helpful message. However, if you find anything unclear after reading this documentation, or that you have to "fight" with the tool, please do not hesitate to open a pull request or an issue on the github repo. The idea behind this project is to help people (including myself) rid themselves of the pains associated with parsing unstructured data, not add to it.
 
-  ## Example
+  ## Examples
 
-  > Most of the "juice", like transforming, validating, nesting, skipping, etc., is in the `DataQuacker.Schema` module, so the more complex and interesting examples also live there. Please take a look at its documentation for more in-depth examples.
+  > Note: Most of the "juice", like transforming, validating, nesting, skipping, etc., is in the `DataQuacker.Schema` module, so the more complex and interesting examples also live there. Please take a look at its documentation for more in-depth examples.
 
   Given the following table of ducks in a pond, in the form of a CSV file:
 
@@ -143,7 +143,7 @@ defmodule DataQuacker do
   | Black    | black          | Infinity |
 
   iex> PondParser.parse("path/to/file.csv")
-  iex> {:ok, [
+  iex> {:error, [
   iex>   :error,
   iex>   :error,
   iex>   {:ok, %{type: "Mandarin", colour: "multi-coloured", age: 4}}

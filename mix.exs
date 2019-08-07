@@ -43,7 +43,8 @@ defmodule DataQuacker.MixProject do
       {:credo, "~> 1.1", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0.0-rc.6", only: :dev, runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},
-      {:csv, "~> 2.3"}
+      {:csv, "~> 2.3"},
+      {:decimal, "~> 1.8", only: :test}
     ]
   end
 

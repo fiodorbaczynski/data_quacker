@@ -58,7 +58,7 @@ defmodule DataQuacker.Schema do
         source("first name")
       end
 
-      field :first_name do
+      field :last_name do
         source("last name")
       end
 
@@ -85,7 +85,7 @@ defmodule DataQuacker.Schema do
         source("first name")
       end
 
-      field :first_name do
+      field :last_name do
         source("last name")
       end
 
@@ -146,7 +146,7 @@ defmodule DataQuacker.Schema do
           source("first name")
         end
 
-        field :first_name do
+        field :last_name do
           source("last name")
         end
       end
@@ -219,8 +219,9 @@ defmodule DataQuacker.Schema do
 
   > Note: The rows in the result are in the reverse order compared to the source rows. This is because for large lists reversing may be an expensive operation, which is often redundant, for example if the result is supposed to be inserted in a database.
 
-  This schema could work, but there are a couple of problems with it.
-  First of all, it's not fun to copy&paste the function for parsing string to int
+  This schema could work, but there are some problems with it.
+
+  It's not fun to copy&paste the function for parsing string to int
   over and over again. That's why we'll create a regular function
   and pass a reference to it in both places.
 
@@ -364,7 +365,7 @@ defmodule DataQuacker.Schema do
         end
 
         field :duration do
-          virtual_source(1)
+          virtual_source(3)
         end
 
         field :price do
@@ -406,13 +407,13 @@ defmodule DataQuacker.Schema do
 
   Using our latest schema and the CSV presented above, we get this result:
   ```elixir
-  [
-    ok: %{duration: 1, price: 3600, size: 50},
-    ok: %{duration: 3, price: 3000, size: 50},
-    ok: %{duration: 1, price: 1100, size: 50},
-    ok: %{duration: 3, price: 2800, size: 40},
-    ok: %{duration: 1, price: 1000, size: 40}
-  ]
+  {:ok, [
+    {:ok, %{duration: 3, price: 3600, size: 60}},
+    {:ok, %{duration: 3, price: 3000, size: 50}},
+    {:ok, %{duration: 1, price: 1100, size: 50}},
+    {:ok, %{duration: 3, price: 2800, size: 40}},
+    {:ok, %{duration: 1, price: 1000, size: 40}}
+  ]}
   ```
 
   The last case is about multiple transformations on the same field.
@@ -444,7 +445,7 @@ defmodule DataQuacker.Schema do
 
   def parse_decimal(str, %{metadata: metadata, source_row: source_row}) do
     case Decimal.parse(str) do
-      {decimal, _} -> {:ok, decimal}
+      {:ok, decimal} -> {:ok, decimal}
       :error -> {:error, "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
     end
   end
@@ -510,7 +511,7 @@ defmodule DataQuacker.Schema do
         end
 
         field :duration do
-          virtual_source(1)
+          virtual_source(3)
         end
 
         field :price do
@@ -539,7 +540,7 @@ defmodule DataQuacker.Schema do
 
     def parse_decimal(str, %{metadata: metadata, source_row: source_row}) do
       case Decimal.parse(str) do
-        {decimal, _} -> {:ok, decimal}
+        {:ok, decimal} -> {:ok, decimal}
         :error -> {:error, "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
       end
     end
