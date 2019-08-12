@@ -40,21 +40,21 @@ defmodule DataQuacker.CSVAdapterTest do
     test "given a remote file url, should parse the source", %{
       sample_source: [headers | rows] = sample_source
     } do
-      expect(DataQuacker.MockFileManager, :read_link!, fn "file_ur.com" ->
-        Stream.map(sample_source, &Enum.join(&1, ","))
+      expect(DataQuacker.MockFileManager, :read_link!, fn "file_url.com" ->
+        Enum.map(sample_source, &Enum.join(&1, ","))
       end)
 
-      assert CSV.parse_source("file_ur.com", local?: false) ==
+      assert CSV.parse_source("file_url.com", local?: false) ==
                {:ok, %{headers: {:ok, headers}, rows: Enum.map(rows, &{:ok, &1})}}
     end
 
     test "with semicolon set as the separator given a remote file url, should parse the source",
          %{sample_source: [headers | rows] = sample_source} do
-      expect(DataQuacker.MockFileManager, :read_link!, fn "file_ur.com" ->
-        Stream.map(sample_source, &Enum.join(&1, ";"))
+      expect(DataQuacker.MockFileManager, :read_link!, fn "file_url.com" ->
+        Enum.map(sample_source, &Enum.join(&1, ";"))
       end)
 
-      assert CSV.parse_source("file_ur.com", local?: false, separator: ?;) ==
+      assert CSV.parse_source("file_url.com", local?: false, separator: ?;) ==
                {:ok, %{headers: {:ok, headers}, rows: Enum.map(rows, &{:ok, &1})}}
     end
   end
