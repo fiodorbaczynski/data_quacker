@@ -1,10 +1,12 @@
 # DataQuacker
 
-DataQuacker aims at making it easier to validate, transform and parse CSV files.
+DataQuacker is a library which aims at helping validating, transforming and parsing non-sandboxed data, like CSV files.
 
-It features a simple DSL similar to those of Ecto's and Absinthe's schemas, which allows the user to declaratively describe the rules for mapping columns in a CSV file into a desired structure. It also makes it easy to specify rules for validating, transforming and skipping specific fields and rows.
+It features a simple DSL similar to that of Ecto, which allows the user to declaratively describe the rules for mapping columns in the source into a desired structure. It also makes it easy to specify rules for validating, transforming and skipping specific fields and rows.
 
-This library is still a work in progress. To see the list of "todo tasks" go to [todo.md](./docs/todo.md)
+
+
+To see the next steps for this library take a look at: [todo.md](./docs/todo.md)
 
 ## Installation
 
@@ -20,7 +22,9 @@ end
 
 ## Contribution
 
-Any contribution, including reporting issues, is greatly appreciated. You may contribute anything you feel is needed, but the tasks listed in [todo.md](./docs/todo.md) are the most important for now for DataQuacker to be "1.0-ready".
+Any contribution is greatly appreciated. If you find anything working incorrectly or missing in this library or its documentation, please open an issue or a pull request.
+
+Issues inquiring about usage and best practices are also welcome.
 
 ## Testimonials
 
