@@ -8,8 +8,4 @@ defmodule DataQuacker.Case do
       import DataQuacker.Case
     end
   end
-
-  def compile_file(name) do
-    Code.compile_file(name, "test/support/test_modules")
-  end
 end

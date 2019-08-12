@@ -44,7 +44,8 @@ defmodule DataQuacker.MixProject do
       {:dialyxir, "~> 1.0.0-rc.6", only: :dev, runtime: false},
       {:ex_doc, "~> 0.21", only: :dev, runtime: false},
       {:csv, "~> 2.3"},
-      {:decimal, "~> 1.8", only: :test}
+      {:decimal, "~> 1.8", only: :test},
+      {:mox, "~> 0.5", only: :test}
     ]
   end
 

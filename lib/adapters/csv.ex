@@ -30,13 +30,9 @@ defmodule DataQuacker.Adapters.CSV do
 
   defp get_file(file_path_or_url, opts) do
     case Keyword.get(opts, :local?, true) do
-      true -> stream_file(file_path_or_url)
-      _ -> File.read_link(file_path_or_url)
+      true -> {:ok, file_manager().stream!(file_path_or_url)}
+      false -> {:ok, file_manager().read_link!(file_path_or_url)}
     end
-  end
-
-  defp stream_file(file_path) do
-    {:ok, File.stream!(file_path)}
   rescue
     _ -> {:error, "File does not exist or is corrupted"}
   end
@@ -63,4 +59,8 @@ defmodule DataQuacker.Adapters.CSV do
 
   @impl true
   def get_row(row), do: row
+
+  defp file_manager() do
+    Application.get_env(:data_quacker, :file_manager) || DataQuacker.FileManager
+  end
 end
