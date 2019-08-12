@@ -12,7 +12,8 @@ defmodule DataQuacker.MixProject do
       start_permanent: Mix.env() == :prod,
       package: package(),
       name: "DataQuacker",
-      description: "A library for validating transforming and parsing CSV data",
+      description:
+        "A library for validating transforming and parsing non-sandboxed data (e.g. CSV files)",
       source_url: "https://github.com/fiodorbaczynski/data_quacker",
       homepage_url: "https://github.com/fiodorbaczynski/data_quacker",
       docs: docs()
@@ -31,7 +32,8 @@ defmodule DataQuacker.MixProject do
 
   def package do
     [
-      files: ["lib", "mix.exs", "README*", "LICENSE*"],
+      name: "data_quacker",
+      files: ["lib", ".formatter.exs", "mix.exs", "README*", "LICENSE*"],
       maintainers: ["Fiodor Baczyński"],
       licenses: ["Apache-2.0"],
       links: %{"GitHub" => "https://github.com/fiodorbaczynski/data_quacker"}
