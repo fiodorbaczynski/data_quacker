@@ -9,15 +9,52 @@ agent:
       image: semaphoreci/elixir:1.9.0
 
 blocks:
-  - name: Run tests and checks
+  - name: Install dependencies
     task:
       jobs:
-        - name: Build and run docker image for tests
+        - name: Install dependencies
           commands:
             - checkout
             - mix local.hex --force
             - mix local.rebar --force
-            - mix deps.get
+            - cache restore
+            - cache restore dialyzer-plt
+            - mix do deps.get, compile, dialyzer --plt
+            - MIX_ENV=test mix compile
+            - cache store
+            - cache store dialyzer-plt priv/plts/
+  - name: Run checks
+    task:
+      prologue:
+        commands:
+          - checkout
+          - mix local.hex --force
+          - mix local.rebar --force
+          - cache restore
+          - cache restore dialyzer-plt
+      jobs:
+        - name: Run formatter
+          commands:
             - mix format --check-formatted
+        - name: Run credo
+          commands:
             - mix credo --strict
+        - name: Run dialyzer
+          commands:
+            - mix dialyzer
+            - cache store
+  - name: Run tests
+    task:
+      env_vars:
+        - name: MIX_ENV
+          value: test
+      prologue:
+        commands:
+          - checkout
+          - mix local.hex --force
+          - mix local.rebar --force
+          - cache restore
+      jobs:
+        - name: Run tests
+          commands:
             - mix test
