@@ -15,7 +15,7 @@ To install the library, add it to your `mix.exs` deps.
 ```elixir
 def deps do
   [
-    {:data_quacker, "~> 0.1.0"}
+    {:data_quacker, "~> 0.1.1"}
   ]
 end
 ```
