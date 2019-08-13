@@ -86,12 +86,14 @@ defmodule DataQuacker do
   end
   ```
 
-    iex> PondParser.parse("path/to/file.csv")
-    iex> {:ok, [
-    iex>   {:ok, %{type: "Mandarin", colour: "multi-coloured", age: "4"}},
-    iex>   {:ok, %{type: "Domestic", colour: "white", age: "2"}},
-    iex>   {:ok, %{type: "Mallard", colour: "green", age: "3"}},
-    iex> ]}
+  ```elixir
+  iex> PondParser.parse("path/to/file.csv")
+  iex> {:ok, [
+  iex>   {:ok, %{type: "Mandarin", colour: "multi-coloured", age: "4"}},
+  iex>   {:ok, %{type: "Domestic", colour: "white", age: "2"}},
+  iex>   {:ok, %{type: "Mallard", colour: "green", age: "3"}},
+  iex> ]}
+  ```
 
   Using this schema and parser we get a tuple of `:ok` or `:error`, and a list of rows,
   each of which is also a tuple of `:ok` or `:error`, but with a map as the second element.
@@ -138,12 +140,14 @@ defmodule DataQuacker do
 
   Using the same input file the output is now:
 
+  ```elixir
   iex> PondParser.parse("path/to/file.csv")
   iex> {:ok, [
   iex>   {:ok, %{type: "Mandarin", colour: "multi-coloured", age: 4}},
   iex>   {:ok, %{type: "Domestic", colour: "white", age: 2}},
   iex>   {:ok, %{type: "Mallard", colour: "green", age: 3}},
   iex> ]}
+  ```
 
   (the difference is in the type of "age")
 
@@ -157,6 +161,7 @@ defmodule DataQuacker do
   | Mystery  | golden         | 100      |
   | Black    | black          | Infinity |
 
+  ```elixir
   iex> PondParser.parse("path/to/file.csv")
   iex> {:error, [
   iex>   :error,
@@ -165,6 +170,7 @@ defmodule DataQuacker do
   iex>   {:ok, %{type: "Domestic", colour: "white", age: 2}},
   iex>   {:ok, %{type: "Mallard", colour: "green", age: 3}},
   iex> ]}
+  ```
 
   Since the last two rows of the input are invalid, the first two rows in the output are errors.
 
