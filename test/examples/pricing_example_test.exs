@@ -273,7 +273,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
 
     @tag :integration
     test "should parse sample data given the pricing example 4 schema" do
-      assert {:ok, [row1, row2, row3, row4, row5] = r} =
+      assert {:ok, [row1, row2, row3, row4, row5]} =
                DataQuacker.parse(
                  %{
                    headers: ["Apartment or flat size", "Price for 1 month", "Price per 3 months"],
@@ -297,7 +297,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
 
     @tag :integration
     test "should parse sample data given the pricing example 5 schema" do
-      assert {:ok, [row1, row2, row3, row4, row5] = r} =
+      assert {:ok, [row1, row2, row3, row4, row5]} =
                DataQuacker.parse(
                  %{
                    headers: ["Apartment or flat size", "Price for 1 month", "Price per 3 months"],
