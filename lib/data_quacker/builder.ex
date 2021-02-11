@@ -42,7 +42,7 @@ defmodule DataQuacker.Builder do
     context = Context.increment_row(context)
     source_row = adapter.get_row(source_row)
 
-    result = do_build_source_row(source_row, schema_rows, column_mappings, context)
+    {result, context} = do_build_source_row(source_row, schema_rows, column_mappings, context)
 
     build_source_rows(
       rest,
@@ -76,11 +76,12 @@ defmodule DataQuacker.Builder do
   defp build_schema_rows([row | rest], values, context, acc) do
     case do_build_schema_row(row, values, context) do
       :skip -> build_schema_rows(rest, values, context, acc)
-      row -> build_schema_rows(rest, values, context, [row | acc])
+      {:ok, fields, context} -> build_schema_rows(rest, values, context, [{:ok, fields} | acc])
+      error -> build_schema_rows(rest, values, context, [error | acc])
     end
   end
 
-  defp build_schema_rows([], _, _, acc), do: acc
+  defp build_schema_rows([], _, context, acc), do: {acc, context}
 
   defp do_build_schema_row(
          %{
@@ -94,11 +95,11 @@ defmodule DataQuacker.Builder do
          context
        ) do
     with context <- Context.update_metadata(context, :row, row_index),
-         {:ok, fields} <- fields |> Enum.into([]) |> build_fields(values, context),
+         {:ok, fields, context} <- fields |> Enum.into([]) |> build_fields(values, context),
          {:ok, fields, context} <- Transformer.call(fields, transformers, context),
          :ok <- Validator.call(fields, validators, context),
          false <- Skipper.call(fields, skip_if, context) do
-      {:ok, fields}
+      {:ok, fields, context}
     else
       true -> :skip
       error -> error
@@ -109,13 +110,18 @@ defmodule DataQuacker.Builder do
 
   defp build_fields([{field_name, field} | fields], values, context, acc) do
     case do_build_field(field, values, context) do
-      :skip -> build_fields(fields, values, context, acc)
-      {:ok, field} -> build_fields(fields, values, context, Map.put(acc, field_name, field))
-      error -> error
+      :skip ->
+        build_fields(fields, values, context, acc)
+
+      {:ok, field, context} ->
+        build_fields(fields, values, context, Map.put(acc, field_name, field))
+
+      error ->
+        error
     end
   end
 
-  defp build_fields([], _, _, acc), do: {:ok, acc}
+  defp build_fields([], _, context, acc), do: {:ok, acc, context}
 
   defp do_build_field(
          %{
@@ -132,7 +138,7 @@ defmodule DataQuacker.Builder do
          {:ok, value, context} <- Transformer.call(value, transformers, context),
          :ok <- Validator.call(value, validators, context),
          false <- Skipper.call(value, skip_if, context) do
-      {:ok, value}
+      {:ok, value, context}
     else
       true -> :skip
       error -> error

@@ -5,7 +5,7 @@ defmodule DataQuacker.Transformer do
 
   alias DataQuacker.Schema.WrappedFun
 
-  @type transformation_result :: {:ok, any()} | {:error, any()} | :error
+  @type transformation_result :: {:ok, any()} | {:ok, any(), any()} | {:error, any()} | :error
 
   @spec call(any(), nonempty_list(WrappedFun.t()), Context.t()) :: transformation_result()
   def call(value, [transformer | rest], context) do
@@ -29,12 +29,12 @@ defmodule DataQuacker.Transformer do
         returned an incorrect value #{inspect(el)}.
 
         Transformers can only have returns of type:
-        `{:ok, any()} | {:error, any()} | :error`
+        `{:ok, any()} | {:ok, any(), any()} | {:error, any()} | :error`
         """
     end
   end
 
-  @spec call(any(), [], Context.t()) :: {:ok, any()}
+  @spec call(any(), [], Context.t()) :: {:ok, any(), Context.t()}
   def call(value, [], context), do: {:ok, value, context}
 
   @spec apply_transformer(any(), WrappedFun.t(1), Context.t()) :: any()
