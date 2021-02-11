@@ -13,6 +13,9 @@ defmodule DataQuacker.Transformer do
       {:ok, value} ->
         call(value, rest, context)
 
+      {:ok, value, support_data} ->
+        call(value, rest, %{context | support_data: support_data})
+
       {:error, _} = error ->
         error
 
@@ -32,7 +35,7 @@ defmodule DataQuacker.Transformer do
   end
 
   @spec call(any(), [], Context.t()) :: {:ok, any()}
-  def call(value, [], _), do: {:ok, value}
+  def call(value, [], context), do: {:ok, value, context}
 
   @spec apply_transformer(any(), WrappedFun.t(1), Context.t()) :: any()
   defp apply_transformer(value, %WrappedFun{callable: callable, arity: 1}, _context) do

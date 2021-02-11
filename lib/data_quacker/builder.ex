@@ -95,7 +95,7 @@ defmodule DataQuacker.Builder do
        ) do
     with context <- Context.update_metadata(context, :row, row_index),
          {:ok, fields} <- fields |> Enum.into([]) |> build_fields(values, context),
-         {:ok, fields} <- Transformer.call(fields, transformers, context),
+         {:ok, fields, context} <- Transformer.call(fields, transformers, context),
          :ok <- Validator.call(fields, validators, context),
          false <- Skipper.call(fields, skip_if, context) do
       {:ok, fields}
@@ -129,7 +129,7 @@ defmodule DataQuacker.Builder do
        ) do
     with context <- Context.update_metadata(context, :field, field_name),
          {:ok, value} <- do_build_field_value(field, values, context),
-         {:ok, value} <- Transformer.call(value, transformers, context),
+         {:ok, value, context} <- Transformer.call(value, transformers, context),
          :ok <- Validator.call(value, validators, context),
          false <- Skipper.call(value, skip_if, context) do
       {:ok, value}
