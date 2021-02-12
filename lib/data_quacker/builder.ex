@@ -134,7 +134,7 @@ defmodule DataQuacker.Builder do
          context
        ) do
     with context <- Context.update_metadata(context, :field, field_name),
-         {:ok, value} <- do_build_field_value(field, values, context),
+         {:ok, value, context} <- do_build_field_value(field, values, context),
          {:ok, value, context} <- Transformer.call(value, transformers, context),
          :ok <- Validator.call(value, validators, context),
          false <- Skipper.call(value, skip_if, context) do
@@ -146,7 +146,7 @@ defmodule DataQuacker.Builder do
   end
 
   defp do_build_field_value(%{__type__: :sourced, source: source}, values, context) do
-    {:ok, Sourcer.call(source, values, context)}
+    {:ok, Sourcer.call(source, values, context), context}
   end
 
   defp do_build_field_value(%{__type__: :wrapper, subfields: subfields}, values, context) do
