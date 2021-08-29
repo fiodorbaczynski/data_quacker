@@ -5,7 +5,7 @@ defmodule DataQuacker.MixProject do
     [
       app: :data_quacker,
       version: "0.1.1",
-      elixir: "~> 1.8",
+      elixir: "~> 1.12",
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
       build_embedded: Mix.env() == :prod,
