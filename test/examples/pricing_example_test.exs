@@ -150,9 +150,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
 
         :error ->
           {:error,
-           "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{
-             str
-           }' given"}
+           "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
       end
     end
 
@@ -165,9 +163,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
 
         :error ->
           {:error,
-           "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{
-             str
-           }' given"}
+           "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
       end
     end
 
@@ -180,9 +176,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
 
         :error ->
           {:error,
-           "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{
-             str
-           }' given"}
+           "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
       end
     end
 
@@ -199,9 +193,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
 
         :error ->
           {:error,
-           "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{
-             str
-           }' given"}
+           "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
       end
     end
   end

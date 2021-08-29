@@ -85,9 +85,7 @@ defmodule DataQuacker.Examples.StudentsExampleTest do
 
             false ->
               {:error,
-               "Invalid favourite subject in row ##{context.source_row}, must be one of #{
-                 inspect(context.support_data.valid_subjects)
-               }"}
+               "Invalid favourite subject in row ##{context.source_row}, must be one of #{inspect(context.support_data.valid_subjects)}"}
           end
         end)
 
