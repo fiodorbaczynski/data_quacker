@@ -448,7 +448,7 @@ defmodule DataQuacker.Schema do
 
   def parse_decimal(str, %{metadata: metadata, source_row: source_row}) do
     case Decimal.parse(str) do
-      {:ok, decimal} -> {:ok, decimal}
+      {decimal, ""} -> {:ok, decimal}
       :error -> {:error, "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
     end
   end
@@ -543,7 +543,7 @@ defmodule DataQuacker.Schema do
 
     def parse_decimal(str, %{metadata: metadata, source_row: source_row}) do
       case Decimal.parse(str) do
-        {:ok, decimal} -> {:ok, decimal}
+        {decimal, ""} -> {:ok, decimal}
         :error -> {:error, "Error processing #{elem(metadata, 0)} #{elem(metadata, 1)} in row #{source_row}; '#{str}' given"}
       end
     end

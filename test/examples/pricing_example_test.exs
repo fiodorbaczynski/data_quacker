@@ -188,7 +188,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
 
     def parse_decimal(str, %{metadata: metadata, source_row: source_row}) do
       case Decimal.parse(str) do
-        {:ok, decimal} ->
+        {decimal, ""} ->
           {:ok, decimal}
 
         :error ->
