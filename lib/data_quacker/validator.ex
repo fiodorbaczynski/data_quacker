@@ -19,7 +19,7 @@ defmodule DataQuacker.Validator do
       false ->
         :error
 
-      {:error, _} = error ->
+      {:error, _details} = error ->
         error
 
       :error ->
@@ -38,7 +38,7 @@ defmodule DataQuacker.Validator do
   end
 
   @spec call(any(), [], Context.t()) :: :ok
-  def call(_, [], _), do: :ok
+  def call(_value, [], _context), do: :ok
 
   @spec apply_validation(any(), WrappedFun.t(1), Context.t()) :: any()
   defp apply_validation(value, %WrappedFun{callable: callable, arity: 1}, _context) do

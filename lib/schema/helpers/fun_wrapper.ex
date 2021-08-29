@@ -1,8 +1,8 @@
 defmodule DataQuacker.Schema.FunWrapper do
   @moduledoc false
 
-  alias DataQuacker.SchemaError
   alias DataQuacker.Schema.WrappedFun
+  alias DataQuacker.SchemaError
 
   defmacro wrap_fun(fun, expected_arity \\ nil) do
     arity = fun_arity(fun)
@@ -26,7 +26,7 @@ defmodule DataQuacker.Schema.FunWrapper do
          arity when not is_nil(arity) <- Keyword.get(fun_info, :arity) do
       arity
     else
-      _ -> raise SchemaError, "Invalid function given"
+      _error -> raise SchemaError, "Invalid function given"
     end
   end
 
@@ -34,6 +34,7 @@ defmodule DataQuacker.Schema.FunWrapper do
 
   defp fun_args(arity) do
     Enum.map(1..arity, fn i ->
+      # credo:disable-for-next-line Credo.Check.Warning.UnsafeToAtom
       arg_name = String.to_atom("arg#{i}")
 
       # AST for a variable
@@ -64,7 +65,8 @@ defmodule DataQuacker.Schema.FunWrapper do
   end
 
   defp random_name() do
-    :crypto.strong_rand_bytes(64)
+    64
+    |> :crypto.strong_rand_bytes()
     |> Base.url_encode64()
     |> binary_part(0, 64)
     |> String.to_atom()

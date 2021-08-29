@@ -13,7 +13,7 @@ defmodule DataQuacker.Adapters.CSV do
 
   @behaviour DataQuacker.Adapter
 
-  @impl true
+  @impl DataQuacker.Adapter
   @doc ~S"""
   Takes in a string with the path or url to the file, and a keyword list of options.
 
@@ -34,7 +34,7 @@ defmodule DataQuacker.Adapters.CSV do
       false -> {:ok, file_manager().read_link!(file_path_or_url)}
     end
   rescue
-    _ -> {:error, "File does not exist or is corrupted"}
+    _error -> {:error, "File does not exist or is corrupted"}
   end
 
   defp decode_source(source_stream, separator) do
@@ -51,13 +51,13 @@ defmodule DataQuacker.Adapters.CSV do
     Keyword.get(opts, :separator, ?,)
   end
 
-  @impl true
+  @impl DataQuacker.Adapter
   def get_headers(%{headers: headers}), do: headers
 
-  @impl true
+  @impl DataQuacker.Adapter
   def get_rows(%{rows: rows}), do: {:ok, rows}
 
-  @impl true
+  @impl DataQuacker.Adapter
   def get_row(row), do: row
 
   defp file_manager() do

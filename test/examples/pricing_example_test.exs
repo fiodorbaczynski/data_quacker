@@ -1,7 +1,7 @@
 defmodule DataQuacker.Examples.PricingExampleTest do
   use DataQuacker.Case, async: true
 
-  alias DataQuacker.Adapters.Identity, as: IdentityAdapter
+  alias DataQuacker.Adapters.Identity
 
   defmodule PricingSchema do
     use DataQuacker.Schema
@@ -154,7 +154,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
       end
     end
 
-    def parse_int_example_4("", _), do: {:ok, nil}
+    def parse_int_example_4("", _context), do: {:ok, nil}
 
     def parse_int_example_4(str, %{metadata: metadata, source_row: source_row}) do
       case Integer.parse(str) do
@@ -167,7 +167,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
       end
     end
 
-    def parse_int_example_5("", _), do: {:ok, nil}
+    def parse_int_example_5("", _context), do: {:ok, nil}
 
     def parse_int_example_5(str, %{metadata: metadata, source_row: source_row}) do
       case Integer.parse(str) do
@@ -184,7 +184,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
       {:ok, String.replace(str, ",", ".")}
     end
 
-    def parse_decimal("", _), do: {:ok, nil}
+    def parse_decimal("", _context), do: {:ok, nil}
 
     def parse_decimal(str, %{metadata: metadata, source_row: source_row}) do
       case Decimal.parse(str) do
@@ -212,7 +212,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
                  },
                  PricingSchema.schema_structure(:pricing_example_1),
                  nil,
-                 adapter: IdentityAdapter
+                 adapter: Identity
                )
 
       assert row1 == {:ok, %{size: 50, price: 1100}}
@@ -232,7 +232,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
                  },
                  PricingSchema.schema_structure(:pricing_example_2),
                  nil,
-                 adapter: IdentityAdapter
+                 adapter: Identity
                )
 
       assert row1 == {:ok, %{size: 50, price: 1100}}
@@ -254,7 +254,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
                  },
                  PricingSchema.schema_structure(:pricing_example_3),
                  nil,
-                 adapter: IdentityAdapter
+                 adapter: Identity
                )
 
       assert row1 == {:error, "Error processing field size in row 4; 'huge' given"}
@@ -277,7 +277,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
                  },
                  PricingSchema.schema_structure(:pricing_example_4),
                  nil,
-                 adapter: IdentityAdapter
+                 adapter: Identity
                )
 
       assert row1 == {:ok, %{duration: 3, price: 3600, size: 60}}
@@ -301,7 +301,7 @@ defmodule DataQuacker.Examples.PricingExampleTest do
                  },
                  PricingSchema.schema_structure(:pricing_example_5),
                  nil,
-                 adapter: IdentityAdapter
+                 adapter: Identity
                )
 
       assert row1 == {:ok, %{duration: 3, price: Decimal.new("3599.99"), size: 60}}

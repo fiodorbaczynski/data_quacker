@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.AppendSingleItem
 defmodule DataQuacker.Schema do
   @moduledoc ~S"""
   Defines macros for creating data schemas
@@ -849,8 +850,10 @@ defmodule DataQuacker.Schema do
           source(fn column_name ->
             column_name = String.downcase(column_name)
 
-            unquote(Enum.map(needle, &String.downcase(&1)))
-            |> Enum.all?(&String.contains?(column_name, &1))
+            Enum.all?(
+              unquote(Enum.map(needle, &String.downcase(&1))),
+              &String.contains?(column_name, &1)
+            )
           end)
         end
 
@@ -892,7 +895,7 @@ defmodule DataQuacker.Schema do
           @state State.update(@state, :field, %{__type__: :sourced, source: State.target(@state)})
         end
 
-      _ ->
+      _el ->
         quote do
           raise SchemaError, """
 
@@ -952,7 +955,7 @@ defmodule DataQuacker.Schema do
                  })
         end
 
-      _ ->
+      _el ->
         quote do
           virtual_source(fn -> unquote(value) end)
         end
@@ -1048,7 +1051,7 @@ defmodule DataQuacker.Schema do
           nil
         end
 
-      _ ->
+      _el ->
         quote do
           raise SchemaError, """
 

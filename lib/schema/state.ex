@@ -1,3 +1,4 @@
+# credo:disable-for-this-file Credo.Check.Refactor.AppendSingleItem
 defmodule DataQuacker.Schema.State do
   @moduledoc false
 

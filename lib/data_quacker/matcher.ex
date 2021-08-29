@@ -27,7 +27,7 @@ defmodule DataQuacker.Matcher do
     end
   end
 
-  defp compile_rules([], _, _, acc), do: {:ok, acc}
+  defp compile_rules([], _headers, _context, acc), do: {:ok, acc}
 
   defp get_header_index(headers, matching_function, context) do
     Enum.find_index(headers, &apply_function(matching_function, &1, context))

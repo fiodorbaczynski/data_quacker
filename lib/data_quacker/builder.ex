@@ -1,7 +1,12 @@
 defmodule DataQuacker.Builder do
   @moduledoc false
 
-  alias DataQuacker.{Context, Matcher, Sourcer, Validator, Transformer, Skipper}
+  alias DataQuacker.Context
+  alias DataQuacker.Matcher
+  alias DataQuacker.Skipper
+  alias DataQuacker.Sourcer
+  alias DataQuacker.Transformer
+  alias DataQuacker.Validator
 
   def call(
         source,
@@ -53,15 +58,17 @@ defmodule DataQuacker.Builder do
       result ++ acc,
       all_ok? and
         Enum.all?(result, fn
-          {:ok, _} -> true
-          _ -> false
+          {:ok, _res} -> true
+          _el -> false
         end)
     )
   end
 
-  defp build_source_rows([], _, _, _, _, acc, true), do: {:ok, acc}
+  defp build_source_rows([], _schema_rows, _column_mappings, _context, _adapter, acc, true),
+    do: {:ok, acc}
 
-  defp build_source_rows([], _, _, _, _, acc, false), do: {:error, acc}
+  defp build_source_rows([], _schema_rows, _column_mappings, _context, _adapter, acc, false),
+    do: {:error, acc}
 
   defp do_build_source_row({:ok, source_row}, schema_rows, column_mappings, context) do
     values = parse_row_values(source_row, column_mappings)
@@ -69,7 +76,7 @@ defmodule DataQuacker.Builder do
     build_schema_rows(schema_rows, values, context)
   end
 
-  defp do_build_source_row(error, _, _, _), do: error
+  defp do_build_source_row(error, _schema_rows, _column_mappings, _context), do: error
 
   defp build_schema_rows(_schema_rows, _values, _context, acc \\ [])
 
@@ -81,7 +88,7 @@ defmodule DataQuacker.Builder do
     end
   end
 
-  defp build_schema_rows([], _, context, acc), do: {acc, context}
+  defp build_schema_rows([], _values, context, acc), do: {acc, context}
 
   defp do_build_schema_row(
          %{
@@ -121,7 +128,7 @@ defmodule DataQuacker.Builder do
     end
   end
 
-  defp build_fields([], _, context, acc), do: {:ok, acc, context}
+  defp build_fields([], _values, context, acc), do: {:ok, acc, context}
 
   defp do_build_field(
          %{

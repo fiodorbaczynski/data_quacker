@@ -16,8 +16,12 @@ defmodule DataQuacker.SkipperTest do
         callable: fn value, context -> value == context.support_data.expected_value end
       }
 
-      incorrect_type_skipper_fun_1 = %WrappedFun{arity: 1, callable: fn _ -> :ok end}
-      incorrect_type_skipper_fun_2 = %WrappedFun{arity: 2, callable: fn _, _ -> :ok end}
+      incorrect_type_skipper_fun_1 = %WrappedFun{arity: 1, callable: fn _value -> :ok end}
+
+      incorrect_type_skipper_fun_2 = %WrappedFun{
+        arity: 2,
+        callable: fn _value, _context -> :ok end
+      }
 
       {:ok,
        skipper_fun_1: skipper_fun_1,

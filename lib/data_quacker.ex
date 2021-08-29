@@ -1,5 +1,5 @@
 defmodule DataQuacker do
-  @moduledoc ~S"""
+  @moduledoc """
   DataQuacker is a library which aims at helping validating, transforming and parsing non-sandboxed data.
 
   The most common example for such data, and the original idea behind this project, is CSV files.

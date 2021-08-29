@@ -21,7 +21,7 @@ defmodule DataQuacker.Adapters.Identity do
 
   @behaviour DataQuacker.Adapter
 
-  @impl true
+  @impl DataQuacker.Adapter
   @doc ~S"""
   Takes in a map with `:headers` and `:rows` keys, where the value under `:headers` is a list of strings, and the value under `:rows` is a list of lists of anything.
 
@@ -31,12 +31,12 @@ defmodule DataQuacker.Adapters.Identity do
     {:ok, source}
   end
 
-  @impl true
+  @impl DataQuacker.Adapter
   def get_headers(%{headers: headers}), do: {:ok, headers}
 
-  @impl true
+  @impl DataQuacker.Adapter
   def get_rows(%{rows: rows}), do: {:ok, rows}
 
-  @impl true
+  @impl DataQuacker.Adapter
   def get_row(row), do: {:ok, row}
 end

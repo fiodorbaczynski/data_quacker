@@ -1,7 +1,7 @@
 defmodule DataQuacker.Examples.PondExampleTest do
   use DataQuacker.Case, async: true
 
-  alias DataQuacker.Adapters.Identity, as: IdentityAdapter
+  alias DataQuacker.Adapters.Identity
 
   defmodule PondSchema do
     use DataQuacker.Schema
@@ -59,7 +59,7 @@ defmodule DataQuacker.Examples.PondExampleTest do
                  },
                  PondSchema.schema_structure(:pond_example_1),
                  nil,
-                 adapter: IdentityAdapter
+                 adapter: Identity
                )
 
       assert row1 == {:ok, %{type: "Mandarin", colour: "multi-coloured", age: "4"}}
@@ -83,7 +83,7 @@ defmodule DataQuacker.Examples.PondExampleTest do
                  },
                  PondSchema.schema_structure(:pond_example_2),
                  nil,
-                 adapter: IdentityAdapter
+                 adapter: Identity
                )
 
       assert row1 == :error

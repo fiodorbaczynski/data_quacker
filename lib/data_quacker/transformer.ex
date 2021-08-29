@@ -16,7 +16,7 @@ defmodule DataQuacker.Transformer do
       {:ok, value, support_data} ->
         call(value, rest, %{context | support_data: support_data})
 
-      {:error, _} = error ->
+      {:error, _details} = error ->
         error
 
       :error ->

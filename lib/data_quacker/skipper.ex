@@ -8,7 +8,7 @@ defmodule DataQuacker.Skipper do
   @type skipper_result :: true | false
 
   @spec call(any(), nil, any()) :: false
-  def call(_, nil, _), do: false
+  def call(_value, nil, _context), do: false
 
   @spec call(any(), WrappedFun.t(), Context.t()) :: skipper_result()
   def call(value, skipping_rule, context) do

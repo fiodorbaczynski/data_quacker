@@ -1,7 +1,7 @@
 defmodule DataQuacker.Examples.StudentsExampleTest do
   use DataQuacker.Case, async: true
 
-  alias DataQuacker.Adapters.Identity, as: IdentityAdapter
+  alias DataQuacker.Adapters.Identity
 
   defmodule StudentsSchema do
     use DataQuacker.Schema
@@ -109,7 +109,7 @@ defmodule DataQuacker.Examples.StudentsExampleTest do
                  },
                  StudentsSchema.schema_structure(:students_example_1),
                  %{valid_subjects: ["Maths", "Physics", "Programming"]},
-                 adapter: IdentityAdapter
+                 adapter: Identity
                )
 
       assert row1 ==
@@ -149,7 +149,7 @@ defmodule DataQuacker.Examples.StudentsExampleTest do
                  },
                  StudentsSchema.schema_structure(:students_example_2),
                  %{valid_subjects: ["Maths", "Physics", "Programming"]},
-                 adapter: IdentityAdapter
+                 adapter: Identity
                )
 
       assert row1 ==
@@ -185,7 +185,7 @@ defmodule DataQuacker.Examples.StudentsExampleTest do
                  },
                  StudentsSchema.schema_structure(:students_example_4),
                  %{valid_subjects: ["Maths", "Physics", "Programming"]},
-                 adapter: IdentityAdapter
+                 adapter: Identity
                )
 
       assert row1 ==
