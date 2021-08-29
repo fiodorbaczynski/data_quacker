@@ -6,7 +6,7 @@ agent:
     os_image: ubuntu1804
   containers:
     - name: main
-      image: semaphoreci/elixir:1.9.0
+      image: semaphoreci/elixir:1.12.0
 
 blocks:
   - name: Install dependencies
